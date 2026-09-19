@@ -34,6 +34,7 @@ export interface Translations {
   sexFemale: string;
   sexOther: string;
   passwordLabel: string;
+  loginPasswordPlaceholder: string;
   passwordPlaceholder: string;
   confirmPasswordLabel: string;
   confirmPasswordPlaceholder: string;
@@ -230,6 +231,7 @@ export const translations: Record<Language, Translations> = {
     sexFemale: 'Female',
     sexOther: 'Other',
     passwordLabel: 'Password',
+    loginPasswordPlaceholder: 'Enter your password',
     passwordPlaceholder: 'Create a strong password',
     confirmPasswordLabel: 'Confirm Password',
     confirmPasswordPlaceholder: 'Re-enter your password',
@@ -423,6 +425,7 @@ export const translations: Record<Language, Translations> = {
     sexFemale: 'பெண்',
     sexOther: 'மற்றவை',
     passwordLabel: 'கடவுச்சொல்',
+    loginPasswordPlaceholder: 'கடவுச்சொல்லை உள்ளிடவும்',
     passwordPlaceholder: 'வலுவான கடவுச்சொல் உருவாக்கவும்',
     confirmPasswordLabel: 'கடவுச்சொல் உறுதிப்படுத்தவும்',
     confirmPasswordPlaceholder: 'கடவுச்சொல்லை மீண்டும் உள்ளிடவும்',

@@ -339,7 +339,7 @@ export const AuthPage: React.FC = () => {
                       type={showPass ? 'text' : 'password'}
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
-                      placeholder={t.passwordPlaceholder}
+                      placeholder={t.loginPasswordPlaceholder}
                       className="w-full px-3.5 py-2.5 pr-10 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 text-sm focus:outline-hidden focus:border-amber-500 transition-colors"
                     />
                     <button
