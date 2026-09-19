@@ -9,7 +9,6 @@ import {
   Globe,
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
   LogOut,
   User,
 } from 'lucide-react';
