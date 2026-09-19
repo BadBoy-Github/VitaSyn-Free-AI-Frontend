@@ -109,11 +109,11 @@ export const EyeAssessment: React.FC = () => {
 
   // Sentences array for Acuity Test
   const acuitySentences = [
-    { text: t.sentVeryBig, sizeClass: 'text-3xl sm:text-4xl font-bold', label: language === 'ta' ? 'மிகப் பெரியது' : 'Very Big' },
-    { text: t.sentBig, sizeClass: 'text-xl sm:text-2xl font-semibold', label: language === 'ta' ? 'பெரியது' : 'Big' },
-    { text: t.sentMedium, sizeClass: 'text-base sm:text-lg font-medium', label: language === 'ta' ? 'நடுத்தரம்' : 'Medium' },
+    { text: t.sentVeryBig, sizeClass: 'text-2xl sm:text-3xl md:text-4xl font-bold', label: language === 'ta' ? 'மிகப் பெரியது' : 'Very Big' },
+    { text: t.sentBig, sizeClass: 'text-lg sm:text-xl md:text-2xl font-semibold', label: language === 'ta' ? 'பெரியது' : 'Big' },
+    { text: t.sentMedium, sizeClass: 'text-sm sm:text-base md:text-lg font-medium', label: language === 'ta' ? 'நடுத்தரம்' : 'Medium' },
     { text: t.sentSmall, sizeClass: 'text-xs sm:text-sm font-normal', label: language === 'ta' ? 'சிறியது' : 'Small' },
-    { text: t.sentVerySmall, sizeClass: 'text-[9px] sm:text-[10px] font-normal leading-tight tracking-tight', label: language === 'ta' ? 'மிகச் சிறியது' : 'Very Small' },
+    { text: t.sentVerySmall, sizeClass: 'text-[10px] sm:text-[11px] font-normal leading-tight tracking-tight', label: language === 'ta' ? 'மிகச் சிறியது' : 'Very Small' },
   ];
 
   const handleAcuityAnswer = (canRead: boolean) => {
@@ -240,14 +240,14 @@ export const EyeAssessment: React.FC = () => {
 
       {/* PHASE 1: 10-STAGE COLOR DIFFERENTIATION TEST */}
       {phase === 'color' && (
-        <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-8 shadow-sm">
           {/* Stage Progress Bar */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
                 {t.stage} {colorStage} {t.of} 10
               </span>
-              <span className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">
+              <span className="text-[11px] sm:text-xs text-zinc-600 dark:text-zinc-400 font-medium">
                 ({language === 'ta' ? 'சிரமம்' : 'Difficulty'}: {Math.round((colorStage / 10) * 100)}%)
               </span>
             </div>
@@ -256,20 +256,20 @@ export const EyeAssessment: React.FC = () => {
             </div>
           </div>
 
-          <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden mb-6">
+          <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden mb-4 sm:mb-6">
             <div
               className="bg-gradient-to-r from-amber-500 to-lime-500 h-full transition-all duration-300 rounded-full"
               style={{ width: `${(colorStage / 10) * 100}%` }}
             />
           </div>
 
-          <div className="text-center mb-6">
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{t.phase1Title}</h2>
+          <div className="text-center mb-4 sm:mb-6">
+            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">{t.phase1Title}</h2>
             <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">{t.tapDifferentTile}</p>
           </div>
 
-          {/* 4x4 Grid of 16 Color Tiles */}
-          <div className="max-w-md mx-auto aspect-square p-4 bg-zinc-100 dark:bg-zinc-900/90 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-inner grid grid-cols-4 gap-2.5 sm:gap-3.5">
+          {/* 4x4 Grid of 16 Color Tiles - Constrained to prevent horizontal overflow on small phones */}
+          <div className="w-full max-w-[310px] sm:max-w-[360px] md:max-w-md mx-auto aspect-square p-2.5 sm:p-4 bg-zinc-100 dark:bg-zinc-900/90 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-inner grid grid-cols-4 gap-2 sm:gap-3 touch-manipulation select-none">
             {Array.from({ length: 16 }).map((_, idx) => {
               const isTarget = idx === targetTileIndex;
               const tileL = isTarget ? Math.min(85, baseColor.l + deltaL) : baseColor.l;
@@ -282,13 +282,13 @@ export const EyeAssessment: React.FC = () => {
                   onClick={() => handleTileClick(idx)}
                   disabled={isTransitioningStage}
                   style={{ backgroundColor: tileBg }}
-                  className={`w-full h-full rounded-xl transition-all duration-150 active:scale-95 shadow-sm hover:opacity-95 cursor-pointer relative flex items-center justify-center ${
+                  className={`w-full h-full rounded-xl transition-all duration-150 active:scale-95 shadow-xs hover:opacity-95 cursor-pointer relative flex items-center justify-center touch-manipulation select-none ${
                     isWrong ? 'ring-4 ring-red-500 scale-95 duration-150 bg-red-500/30' : ''
                   }`}
                   aria-label={`Color tile ${idx + 1}`}
                 >
                   {isWrong && (
-                    <span className="text-white text-xl sm:text-2xl font-black bg-red-600/95 rounded-full w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center shadow-lg animate-bounce">
+                    <span className="text-white text-lg sm:text-2xl font-black bg-red-600/95 rounded-full w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center shadow-lg animate-bounce">
                       ✕
                     </span>
                   )}
@@ -306,12 +306,14 @@ export const EyeAssessment: React.FC = () => {
           )}
 
           {/* Helper info footer */}
-          <div className="mt-6 flex items-center justify-between text-xs text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-800 pt-4">
-            <span>• {language === 'ta' ? 'மொத்தம் 16 வண்ண கட்டங்கள்' : '16 color tiles total'}</span>
-            <span>• {language === 'ta' ? '1 மாறுபட்ட கட்டம்' : '1 unique shade'}</span>
+          <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-800 pt-4">
+            <div className="flex items-center gap-3">
+              <span>• {language === 'ta' ? 'மொத்தம் 16 வண்ண கட்டங்கள்' : '16 color tiles total'}</span>
+              <span>• {language === 'ta' ? '1 மாறுபட்ட கட்டம்' : '1 unique shade'}</span>
+            </div>
             <button
               onClick={() => setPhase('acuity')}
-              className="text-amber-600 dark:text-amber-400 hover:underline font-semibold cursor-pointer"
+              className="text-amber-600 dark:text-amber-400 hover:underline font-semibold cursor-pointer touch-manipulation py-1"
             >
               {t.skipToReading}
             </button>
@@ -321,55 +323,55 @@ export const EyeAssessment: React.FC = () => {
 
       {/* PHASE 2: VISUAL ACUITY READING TEST */}
       {phase === 'acuity' && (
-        <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-6 sm:p-8 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-xs font-bold uppercase tracking-wider text-lime-600 dark:text-lime-400">
+        <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-8 shadow-sm">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <span className="text-xs font-bold uppercase tracking-wider text-lime-600 dark:text-lime-400 truncate max-w-[200px] sm:max-w-none">
               {t.sentenceLevel} {acuityIndex + 1} {t.of} 5: {acuitySentences[acuityIndex].label}
             </span>
-            <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+            <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 shrink-0">
               {t.readingAcuityLabel}: {acuityScore} / 5
             </span>
           </div>
 
-          <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden mb-6">
+          <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden mb-4 sm:mb-6">
             <div
               className="bg-gradient-to-r from-lime-500 to-amber-500 h-full transition-all duration-300 rounded-full"
               style={{ width: `${((acuityIndex + 1) / 5) * 100}%` }}
             />
           </div>
 
-          <div className="text-center mb-6">
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{t.phase2Title}</h2>
+          <div className="text-center mb-4 sm:mb-6">
+            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">{t.phase2Title}</h2>
             <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-lg bg-amber-400/10 border border-amber-400/20 text-xs text-amber-700 dark:text-amber-300 font-medium">
-              <Volume2 className="w-3.5 h-3.5" />
+              <Volume2 className="w-3.5 h-3.5 shrink-0" />
               <span>{t.distanceTip}</span>
             </div>
           </div>
 
           {/* Reading Display Box */}
-          <div className="min-h-[160px] p-6 sm:p-8 bg-zinc-50 dark:bg-zinc-900/70 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-center my-6">
+          <div className="min-h-[140px] sm:min-h-[160px] p-4 sm:p-8 bg-zinc-50 dark:bg-zinc-900/70 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-center my-4 sm:my-6 overflow-hidden">
             <p
-              className={`${acuitySentences[acuityIndex].sizeClass} text-zinc-900 dark:text-zinc-100 transition-all duration-300 max-w-xl`}
+              className={`${acuitySentences[acuityIndex].sizeClass} text-zinc-900 dark:text-zinc-100 transition-all duration-300 max-w-xl break-words`}
             >
               {acuitySentences[acuityIndex].text}
             </p>
           </div>
 
           {/* Prompt */}
-          <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 text-center mb-4">
+          <p className="text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200 text-center mb-4">
             {t.canYouReadPrompt}
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 max-w-lg mx-auto">
             <button
               onClick={() => handleAcuityAnswer(true)}
-              className="py-3 px-4 rounded-xl bg-lime-500 hover:bg-lime-400 text-zinc-950 font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-98 cursor-pointer"
+              className="min-h-[44px] py-3 px-4 rounded-xl bg-lime-500 hover:bg-lime-400 text-zinc-950 font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-[0.98] cursor-pointer touch-manipulation flex items-center justify-center"
             >
               {t.canReadBtn}
             </button>
             <button
               onClick={() => handleAcuityAnswer(false)}
-              className="py-3 px-4 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-semibold text-xs sm:text-sm transition-all active:scale-98 cursor-pointer"
+              className="min-h-[44px] py-3 px-4 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-semibold text-xs sm:text-sm transition-all active:scale-[0.98] cursor-pointer touch-manipulation flex items-center justify-center"
             >
               {t.cannotReadBtn}
             </button>
@@ -463,15 +465,15 @@ export const EyeAssessment: React.FC = () => {
 
           {/* Conditional Question: Positive or Negative */}
           {havePower && (
-            <div className="space-y-2 p-4 rounded-xl bg-amber-400/5 border border-amber-400/20">
-              <label className="block text-sm font-semibold text-amber-700 dark:text-amber-300">
+            <div className="space-y-2 p-3 sm:p-4 rounded-xl bg-amber-400/5 border border-amber-400/20">
+              <label className="block text-xs sm:text-sm font-semibold text-amber-700 dark:text-amber-300">
                 {t.powerTypePrompt}
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setPowerType('positive')}
-                  className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                  className={`min-h-[44px] py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center ${
                     powerType === 'positive'
                       ? 'bg-amber-500 border-amber-500 text-zinc-950 font-bold'
                       : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
@@ -482,7 +484,7 @@ export const EyeAssessment: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setPowerType('negative')}
-                  className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                  className={`min-h-[44px] py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center ${
                     powerType === 'negative'
                       ? 'bg-lime-500 border-lime-500 text-zinc-950 font-bold'
                       : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
@@ -495,10 +497,10 @@ export const EyeAssessment: React.FC = () => {
           )}
 
           {/* Submit Button */}
-          <div className="pt-4 flex items-center justify-between border-t border-zinc-200 dark:border-zinc-800">
+          <div className="pt-4 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800">
             <button
               onClick={() => setPhase('acuity')}
-              className="text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-1 cursor-pointer"
+              className="w-full sm:w-auto min-h-[40px] text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center justify-center gap-1 cursor-pointer touch-manipulation"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>{t.backToReadingTest}</span>
@@ -507,7 +509,7 @@ export const EyeAssessment: React.FC = () => {
             <button
               onClick={submitEyeAssessment}
               disabled={isAnalyzing}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lime-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-zinc-950 font-bold text-sm shadow-md shadow-lime-500/20 active:scale-[0.98] transition-all cursor-pointer"
+              className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lime-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-zinc-950 font-bold text-sm shadow-md shadow-lime-500/20 active:scale-[0.98] transition-all cursor-pointer touch-manipulation"
             >
               {isAnalyzing ? (
                 <>
@@ -528,7 +530,7 @@ export const EyeAssessment: React.FC = () => {
       {/* PHASE 4: AI REPORT */}
       {phase === 'report' && displayReport && (
         <div className="space-y-6">
-          <div className="bg-white dark:bg-[#121812] border border-lime-500/40 dark:border-amber-400/30 rounded-2xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
+          <div className="bg-white dark:bg-[#121812] border border-lime-500/40 dark:border-amber-400/30 rounded-2xl p-4 sm:p-8 shadow-lg relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-lime-500/10 to-amber-400/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 
             {/* Top Bar */}
@@ -546,8 +548,8 @@ export const EyeAssessment: React.FC = () => {
               </div>
 
               {/* Overall Score */}
-              <div className="flex items-center gap-3 bg-zinc-50 dark:bg-zinc-900/80 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 shrink-0">
-                <div className="text-right">
+              <div className="flex items-center justify-between sm:justify-end gap-3 bg-zinc-50 dark:bg-zinc-900/80 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 w-full sm:w-auto shrink-0">
+                <div className="text-left sm:text-right">
                   <div className="text-[10px] uppercase font-bold text-zinc-600 dark:text-zinc-400">
                     {t.overallScore}
                   </div>
@@ -682,10 +684,10 @@ export const EyeAssessment: React.FC = () => {
             </p>
 
             {/* Actions */}
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
               <button
                 onClick={resetEyeTest}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer touch-manipulation active:scale-[0.98]"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>{t.retakeTest}</span>
@@ -693,7 +695,7 @@ export const EyeAssessment: React.FC = () => {
 
               <button
                 onClick={() => window.print()}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-lime-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-zinc-950 font-bold text-xs shadow-md shadow-lime-500/20 transition-all cursor-pointer"
+                className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-lime-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-zinc-950 font-bold text-xs shadow-md shadow-lime-500/20 transition-all cursor-pointer touch-manipulation active:scale-[0.98]"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>{t.printReport}</span>

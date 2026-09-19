@@ -230,13 +230,13 @@ export const HairAssessment: React.FC = () => {
 
       {/* STEP 1: UPLOAD & VERIFY */}
       {(step === 'upload' || step === 'verifying') && (
-        <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-8 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500 font-bold text-sm">
               1
             </div>
             <div>
-              <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{t.uploadTitle}</h2>
+              <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">{t.uploadTitle}</h2>
               <p className="text-xs text-zinc-700 dark:text-zinc-300">{t.uploadDesc}</p>
             </div>
           </div>
@@ -252,7 +252,7 @@ export const HairAssessment: React.FC = () => {
           {/* Upload Dropzone */}
           <div
             onClick={triggerFileInput}
-            className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-200 ${
+            className={`border-2 border-dashed rounded-xl p-4 sm:p-6 text-center cursor-pointer transition-all duration-200 touch-manipulation ${
               imagePreview
                 ? 'border-amber-500/60 bg-amber-500/5'
                 : 'border-zinc-300 dark:border-zinc-700 hover:border-amber-500/50 hover:bg-zinc-50 dark:hover:bg-zinc-900/50'
@@ -260,33 +260,33 @@ export const HairAssessment: React.FC = () => {
           >
             {imagePreview ? (
               <div className="flex flex-col items-center gap-3">
-                <div className="relative">
+                <div className="relative max-w-full">
                   <img
                     src={imagePreview}
                     alt="Scalp Preview"
-                    className="max-h-56 rounded-lg object-contain border border-zinc-200 dark:border-zinc-700 shadow-sm"
+                    className="max-h-48 sm:max-h-56 max-w-full rounded-lg object-contain border border-zinc-200 dark:border-zinc-700 shadow-sm"
                   />
                   <span className="absolute bottom-2 right-2 text-[10px] bg-black/70 text-white px-2 py-0.5 rounded-md backdrop-blur-xs">
                     {t.tapToChangePhoto}
                   </span>
                 </div>
-                <p className="text-xs text-zinc-700 dark:text-zinc-300 font-medium">
+                <p className="text-xs text-zinc-700 dark:text-zinc-300 font-medium truncate max-w-xs">
                   {selectedImage?.name || t.selectedPhotoLabel}
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-6">
-                <div className="p-3 rounded-full bg-amber-500/10 text-amber-500 mb-3">
-                  <UploadCloud className="w-8 h-8" />
+              <div className="flex flex-col items-center justify-center py-4 sm:py-6">
+                <div className="p-3 rounded-full bg-amber-500/10 text-amber-500 mb-2 sm:mb-3">
+                  <UploadCloud className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
                 <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">{t.choosePhoto}</p>
-                <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">PNG, JPG, WEBP up to 15MB</p>
+                <p className="text-[11px] sm:text-xs text-zinc-600 dark:text-zinc-400 mt-1">PNG, JPG, WEBP up to 15MB</p>
               </div>
             )}
           </div>
 
           {/* Optional User Description */}
-          <div className="mt-5">
+          <div className="mt-4 sm:mt-5">
             <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
               {t.photoDescriptionLabel}
             </label>
@@ -300,11 +300,11 @@ export const HairAssessment: React.FC = () => {
           </div>
 
           {/* Action Button */}
-          <div className="mt-6 flex justify-end">
+          <div className="mt-5 sm:mt-6 flex justify-end">
             <button
               onClick={verifyImage}
               disabled={step === 'verifying' || !imagePreview}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200 shadow-md ${
+              className={`w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200 shadow-md touch-manipulation ${
                 !imagePreview || step === 'verifying'
                   ? 'bg-zinc-300 dark:bg-zinc-800 text-zinc-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-amber-500 to-lime-600 hover:from-amber-400 hover:to-lime-500 text-zinc-950 font-bold shadow-amber-500/20 active:scale-[0.98] cursor-pointer'
@@ -395,10 +395,10 @@ export const HairAssessment: React.FC = () => {
 
           {/* Question 1: Dryness */}
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+            <label className="block text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
               {t.qDrynessTitle}
             </label>
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
               {[
                 { key: 'dry', label: t.qDrynessDry },
                 { key: 'normal', label: t.qDrynessNormal },
@@ -408,13 +408,13 @@ export const HairAssessment: React.FC = () => {
                   key={opt.key}
                   type="button"
                   onClick={() => setDryness(opt.key as 'dry' | 'normal' | 'oily')}
-                  className={`py-3 px-2 rounded-xl text-xs font-semibold border transition-all text-center cursor-pointer ${
+                  className={`min-h-[44px] py-2 px-1 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all text-center flex items-center justify-center cursor-pointer touch-manipulation active:scale-[0.98] ${
                     dryness === opt.key
                       ? 'bg-amber-400/20 border-amber-500 text-amber-700 dark:text-amber-300 shadow-xs'
                       : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-amber-400/40'
                   }`}
                 >
-                  {opt.label}
+                  <span className="truncate">{opt.label}</span>
                 </button>
               ))}
             </div>
@@ -422,10 +422,10 @@ export const HairAssessment: React.FC = () => {
 
           {/* Question 2: Growth Rate */}
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+            <label className="block text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
               {t.qGrowthTitle}
             </label>
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
               {[
                 { key: 'fast', label: t.qGrowthFast },
                 { key: 'medium', label: t.qGrowthMedium },
@@ -435,13 +435,13 @@ export const HairAssessment: React.FC = () => {
                   key={opt.key}
                   type="button"
                   onClick={() => setGrowthRate(opt.key as 'fast' | 'medium' | 'slow')}
-                  className={`py-3 px-2 rounded-xl text-xs font-semibold border transition-all text-center cursor-pointer ${
+                  className={`min-h-[44px] py-2 px-1 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all text-center flex items-center justify-center cursor-pointer touch-manipulation active:scale-[0.98] ${
                     growthRate === opt.key
                       ? 'bg-lime-500/20 border-lime-500 text-lime-700 dark:text-lime-300 shadow-xs'
                       : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-lime-400/40'
                   }`}
                 >
-                  {opt.label}
+                  <span className="truncate">{opt.label}</span>
                 </button>
               ))}
             </div>
@@ -449,14 +449,14 @@ export const HairAssessment: React.FC = () => {
 
           {/* Question 3: Itching */}
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+            <label className="block text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
               {t.qItchingTitle}
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setItching(true)}
-                className={`py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                className={`min-h-[44px] py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center ${
                   itching
                     ? 'bg-amber-500/20 border-amber-500 text-amber-700 dark:text-amber-300'
                     : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
@@ -467,7 +467,7 @@ export const HairAssessment: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setItching(false)}
-                className={`py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                className={`min-h-[44px] py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center ${
                   !itching
                     ? 'bg-lime-500/20 border-lime-500 text-lime-700 dark:text-lime-300'
                     : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
@@ -480,14 +480,14 @@ export const HairAssessment: React.FC = () => {
 
           {/* Question 4: Dandruff */}
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+            <label className="block text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
               {t.qDandruffTitle}
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setDandruff(true)}
-                className={`py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                className={`min-h-[44px] py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center ${
                   dandruff
                     ? 'bg-amber-500/20 border-amber-500 text-amber-700 dark:text-amber-300'
                     : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
@@ -498,7 +498,7 @@ export const HairAssessment: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setDandruff(false)}
-                className={`py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                className={`min-h-[44px] py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center ${
                   !dandruff
                     ? 'bg-lime-500/20 border-lime-500 text-lime-700 dark:text-lime-300'
                     : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
@@ -511,14 +511,14 @@ export const HairAssessment: React.FC = () => {
 
           {/* Question 5: Head Lice */}
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+            <label className="block text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
               {t.qLiceTitle}
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setHeadLice(true)}
-                className={`py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                className={`min-h-[44px] py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center ${
                   headLice
                     ? 'bg-red-500/20 border-red-500 text-red-700 dark:text-red-300'
                     : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
@@ -529,7 +529,7 @@ export const HairAssessment: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setHeadLice(false)}
-                className={`py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                className={`min-h-[44px] py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center ${
                   !headLice
                     ? 'bg-lime-500/20 border-lime-500 text-lime-700 dark:text-lime-300'
                     : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
@@ -541,10 +541,10 @@ export const HairAssessment: React.FC = () => {
           </div>
 
           {/* Submit Action */}
-          <div className="pt-4 flex items-center justify-between border-t border-zinc-200 dark:border-zinc-800">
+          <div className="pt-4 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800">
             <button
               onClick={() => setStep('upload')}
-              className="text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-1 cursor-pointer"
+              className="w-full sm:w-auto min-h-[40px] text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center justify-center gap-1 cursor-pointer touch-manipulation"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>{t.backToUpload}</span>
@@ -553,7 +553,7 @@ export const HairAssessment: React.FC = () => {
             <button
               onClick={submitAnalysis}
               disabled={step === 'analyzing'}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-lime-600 hover:from-amber-400 hover:to-lime-500 text-zinc-950 font-bold text-sm shadow-md shadow-amber-500/20 active:scale-[0.98] transition-all cursor-pointer"
+              className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-lime-600 hover:from-amber-400 hover:to-lime-500 text-zinc-950 font-bold text-sm shadow-md shadow-amber-500/20 active:scale-[0.98] transition-all cursor-pointer touch-manipulation"
             >
               {step === 'analyzing' ? (
                 <>
@@ -574,7 +574,7 @@ export const HairAssessment: React.FC = () => {
       {/* STEP 3: AI REPORT CARD */}
       {step === 'report' && displayReport && (
         <div className="space-y-6">
-          <div className="bg-white dark:bg-[#121812] border border-amber-400/40 dark:border-lime-500/30 rounded-2xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
+          <div className="bg-white dark:bg-[#121812] border border-amber-400/40 dark:border-lime-500/30 rounded-2xl p-4 sm:p-8 shadow-lg relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-amber-400/10 to-lime-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 
             {/* Top Bar of Report */}
@@ -592,8 +592,8 @@ export const HairAssessment: React.FC = () => {
               </div>
 
               {/* Score Meter */}
-              <div className="flex items-center gap-3 bg-zinc-50 dark:bg-zinc-900/80 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 shrink-0">
-                <div className="text-right">
+              <div className="flex items-center justify-between sm:justify-end gap-3 bg-zinc-50 dark:bg-zinc-900/80 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 w-full sm:w-auto shrink-0">
+                <div className="text-left sm:text-right">
                   <div className="text-[10px] uppercase font-bold text-zinc-600 dark:text-zinc-400">
                     {t.overallScore}
                   </div>
@@ -617,7 +617,7 @@ export const HairAssessment: React.FC = () => {
               <div className="text-[11px] uppercase font-bold tracking-wider text-zinc-600 dark:text-zinc-400 mb-1">
                 {t.conditionBadge}
               </div>
-              <div className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+              <div className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
                 {displayReport.condition}
               </div>
             </div>
@@ -718,10 +718,10 @@ export const HairAssessment: React.FC = () => {
             </p>
 
             {/* Actions */}
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
               <button
                 onClick={resetAssessment}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer touch-manipulation active:scale-[0.98]"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>{t.retakeTest}</span>
@@ -729,7 +729,7 @@ export const HairAssessment: React.FC = () => {
 
               <button
                 onClick={() => window.print()}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-lime-600 hover:from-amber-400 hover:to-lime-500 text-zinc-950 font-bold text-xs shadow-md shadow-amber-500/20 transition-all cursor-pointer"
+                className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-lime-600 hover:from-amber-400 hover:to-lime-500 text-zinc-950 font-bold text-xs shadow-md shadow-amber-500/20 transition-all cursor-pointer touch-manipulation active:scale-[0.98]"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>{t.printReport}</span>

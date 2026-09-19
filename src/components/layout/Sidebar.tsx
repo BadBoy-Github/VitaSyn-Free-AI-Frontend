@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Sparkles,
   Eye,
@@ -11,6 +11,7 @@ import {
   ChevronRight,
   LogOut,
   User,
+  X,
 } from 'lucide-react';
 import { useThemeLanguage } from '../../context/ThemeLanguageContext';
 import { useAuth } from '../../context/AuthContext';
@@ -34,19 +35,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { theme, toggleTheme, language, toggleLanguage, t } = useThemeLanguage();
   const { user, logout } = useAuth();
 
+  // Close sidebar on small screens when a navigation item is clicked
+  const handleNavClick = (callback: () => void) => {
+    callback();
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setIsOpen(false);
+    }
+  };
+
+  // Lock body scroll when mobile sidebar drawer is open
+  useEffect(() => {
+    if (isOpen && typeof window !== 'undefined' && window.innerWidth < 768) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   return (
     <>
-      {/* Mobile Backdrop */}
+      {/* Mobile & Tablet Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-xs transition-opacity"
           onClick={() => setIsOpen(false)}
+          aria-label="Close sidebar backdrop"
         />
       )}
 
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 flex flex-col bg-zinc-50 dark:bg-[#0d120d] border-r border-zinc-200 dark:border-[#1e2a1e] transition-all duration-300 ease-in-out ${
-          isOpen ? 'w-72 translate-x-0' : '-translate-x-full md:translate-x-0 md:w-16'
+        className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col bg-zinc-50 dark:bg-[#0d120d] border-r border-zinc-200 dark:border-[#1e2a1e] transition-all duration-300 ease-in-out ${
+          isOpen ? 'w-72 sm:w-80 lg:w-72 translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-16'
         }`}
       >
         {/* Top Header / Branding */}
@@ -61,23 +83,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
 
+          {/* Desktop collapse toggle */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="hidden md:flex p-1.5 rounded-lg text-zinc-500 hover:text-amber-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors ml-2 shrink-0"
+            className="hidden lg:flex p-1.5 rounded-lg text-zinc-500 hover:text-amber-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors ml-2 shrink-0"
             title={isOpen ? 'Collapse' : 'Expand'}
           >
             {isOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          </button>
+
+          {/* Mobile & Tablet explicit close button */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className="lg:hidden p-2 rounded-lg text-zinc-500 hover:text-red-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors ml-2 shrink-0 touch-manipulation"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Dashboard Button */}
         <div className="p-3">
           <button
-            onClick={() => {
-              onNewAssessment();
-              if (window.innerWidth < 768) setIsOpen(false);
-            }}
-            className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm ${
+            onClick={() => handleNavClick(onNewAssessment)}
+            className={`w-full min-h-[44px] flex items-center gap-2.5 px-3 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 shadow-sm active:scale-[0.98] touch-manipulation cursor-pointer ${
               isOpen
                 ? 'bg-gradient-to-r from-amber-500 to-lime-600 hover:from-amber-400 hover:to-lime-500 text-zinc-950 shadow-amber-500/20'
                 : 'bg-amber-500 text-zinc-950 hover:bg-amber-400 justify-center'
@@ -89,14 +118,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Navigation Items */}
-        <div className="flex-1 px-3 py-2 space-y-1.5 overflow-y-auto">
+        <div className="flex-1 px-3 py-2 space-y-2 overflow-y-auto">
           {/* Hair Analysis Tab */}
           <button
-            onClick={() => {
-              setCurrentTab('hair');
-              if (window.innerWidth < 768) setIsOpen(false);
-            }}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            onClick={() => handleNavClick(() => setCurrentTab('hair'))}
+            className={`w-full min-h-[44px] flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all touch-manipulation cursor-pointer ${
               isOpen ? '' : 'justify-center'
             } ${
               currentTab === 'hair'
@@ -109,9 +135,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Sparkles className="w-4 h-4" />
             </div>
             {isOpen && (
-              <div className="text-left flex-1">
-                <div className="font-semibold">{t.navHair}</div>
-                <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
+              <div className="text-left flex-1 min-w-0">
+                <div className="font-semibold truncate">{t.navHair}</div>
+                <div className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
                   {language === 'ta' ? 'AI பார்வை சரிபார்ப்பு' : 'AI Vision Verification'}
                 </div>
               </div>
@@ -120,11 +146,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Eye Checkup AI Tab */}
           <button
-            onClick={() => {
-              setCurrentTab('eye');
-              if (window.innerWidth < 768) setIsOpen(false);
-            }}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            onClick={() => handleNavClick(() => setCurrentTab('eye'))}
+            className={`w-full min-h-[44px] flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all touch-manipulation cursor-pointer ${
               isOpen ? '' : 'justify-center'
             } ${
               currentTab === 'eye'
@@ -137,9 +160,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <Eye className="w-4 h-4" />
             </div>
             {isOpen && (
-              <div className="text-left flex-1">
-                <div className="font-semibold">{t.navEye}</div>
-                <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
+              <div className="text-left flex-1 min-w-0">
+                <div className="font-semibold truncate">{t.navEye}</div>
+                <div className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
                   {language === 'ta' ? '10 நிலை வண்ண & பார்வை' : '10-Stage Color & Acuity'}
                 </div>
               </div>
@@ -148,11 +171,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Past Reports Tab */}
           <button
-            onClick={() => {
-              setCurrentTab('history');
-              if (window.innerWidth < 768) setIsOpen(false);
-            }}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            onClick={() => handleNavClick(() => setCurrentTab('history'))}
+            className={`w-full min-h-[44px] flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all touch-manipulation cursor-pointer ${
               isOpen ? '' : 'justify-center'
             } ${
               currentTab === 'history'
@@ -165,16 +185,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <History className="w-4 h-4" />
             </div>
             {isOpen && (
-              <div className="text-left flex-1">
-                <div className="font-semibold">{t.navHistory}</div>
-                <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
+              <div className="text-left flex-1 min-w-0">
+                <div className="font-semibold truncate">{t.navHistory}</div>
+                <div className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
                   {language === 'ta' ? 'சேமிக்கப்பட்ட பதிவுகள்' : 'Saved Records'}
                 </div>
               </div>
             )}
           </button>
-
-
         </div>
 
         {/* Logged-in User Info (only when expanded) */}
@@ -197,7 +215,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Language Toggle */}
           <button
             onClick={toggleLanguage}
-            className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800/80 transition-colors ${
+            className={`w-full min-h-[44px] flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800/80 transition-colors touch-manipulation cursor-pointer ${
               !isOpen ? 'justify-center' : ''
             }`}
             title={`Switch to ${language === 'en' ? 'தமிழ்' : 'English'}`}
@@ -216,7 +234,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800/80 transition-colors ${
+            className={`w-full min-h-[44px] flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800/80 transition-colors touch-manipulation cursor-pointer ${
               !isOpen ? 'justify-center' : ''
             }`}
             title={theme === 'dark' ? t.lightMode : t.darkMode}
@@ -231,8 +249,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Logout */}
           <button
-            onClick={logout}
-            className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors ${
+            onClick={() => handleNavClick(logout)}
+            className={`w-full min-h-[44px] flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors touch-manipulation cursor-pointer ${
               !isOpen ? 'justify-center' : ''
             }`}
             title={t.navLogout}

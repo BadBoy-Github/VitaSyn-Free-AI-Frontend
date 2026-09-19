@@ -47,27 +47,27 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 h-16 px-4 md:px-6 bg-white/80 dark:bg-[#0b0f0b]/80 backdrop-blur-md border-b border-zinc-200 dark:border-[#1e2a1e] flex items-center justify-between">
-      <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-30 h-14 sm:h-16 px-3 sm:px-4 md:px-6 bg-white/80 dark:bg-[#0b0f0b]/80 backdrop-blur-md border-b border-zinc-200 dark:border-[#1e2a1e] flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         {/* Mobile menu trigger */}
         <button
           onClick={onOpenMobileSidebar}
-          className="md:hidden p-2 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-          aria-label="Open sidebar"
+          className="lg:hidden p-2 rounded-xl text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 min-h-[40px] min-w-[40px] flex items-center justify-center touch-manipulation cursor-pointer"
+          aria-label="Open sidebar navigation"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         {/* Mobile logo */}
-        <div className="md:hidden">
+        <div className="lg:hidden shrink-0">
           <BrandLogo size="sm" showCompanyLink={false} />
         </div>
 
         {/* Desktop breadcrumb */}
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-2">
           <button
             onClick={onResetToWelcome}
-            className="text-xs text-zinc-700 dark:text-zinc-300 hover:text-amber-600 dark:hover:text-amber-400 font-medium"
+            className="text-xs text-zinc-700 dark:text-zinc-300 hover:text-amber-600 dark:hover:text-amber-400 font-medium cursor-pointer"
           >
             {t.dashboard}
           </button>
@@ -81,29 +81,37 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Quick Controls */}
-      <div className="flex items-center gap-2">
-        {/* User badge */}
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        {/* User indicator */}
         {user && (
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 text-xs text-zinc-700 dark:text-zinc-300">
-            <User className="w-3.5 h-3.5 text-amber-500" />
-            <span className="font-medium truncate max-w-[100px]">{user.name}</span>
-          </div>
+          <>
+            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 text-xs text-zinc-700 dark:text-zinc-300">
+              <User className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span className="font-medium truncate max-w-[100px]">{user.name}</span>
+            </div>
+            <div
+              className="flex md:hidden p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 text-amber-500"
+              title={user.name}
+            >
+              <User className="w-3.5 h-3.5" />
+            </div>
+          </>
         )}
 
         {/* Language switch */}
         <button
           onClick={toggleLanguage}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100/70 dark:bg-zinc-900/60 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:border-amber-400/50 transition-colors"
+          className="min-h-[38px] flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100/70 dark:bg-zinc-900/60 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:border-amber-400/50 transition-colors touch-manipulation cursor-pointer"
           title="Switch Language"
         >
-          <Globe className="w-3.5 h-3.5 text-amber-500" />
-          <span>{language === 'en' ? 'தமிழ்' : 'English'}</span>
+          <Globe className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+          <span>{language === 'en' ? 'தமிழ்' : 'EN'}</span>
         </button>
 
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100/70 dark:bg-zinc-900/60 text-zinc-700 dark:text-zinc-300 hover:border-lime-500/50 transition-colors"
+          className="min-h-[38px] min-w-[38px] flex items-center justify-center p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100/70 dark:bg-zinc-900/60 text-zinc-700 dark:text-zinc-300 hover:border-lime-500/50 transition-colors touch-manipulation cursor-pointer"
           title={theme === 'dark' ? t.lightMode : t.darkMode}
         >
           {theme === 'dark' ? (

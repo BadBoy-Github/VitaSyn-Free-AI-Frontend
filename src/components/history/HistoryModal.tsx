@@ -78,10 +78,10 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
   return (
     <div className="max-w-4xl mx-auto py-4 px-2 sm:px-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-            <History className="w-6 h-6 text-amber-500" />
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+            <History className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500 shrink-0" />
             <span>{t.historyTitle}</span>
           </h1>
           <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-0.5">
@@ -89,14 +89,14 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           {/* Filter Pills */}
           <div className="flex items-center p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs">
             {(['all', 'hair', 'eye'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3 py-1 rounded-lg font-semibold capitalize transition-all cursor-pointer ${
+                className={`min-h-[36px] px-3 py-1 rounded-lg font-semibold capitalize transition-all cursor-pointer touch-manipulation ${
                   filter === f
                     ? 'bg-amber-400/20 text-amber-700 dark:text-amber-300 shadow-xs'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
@@ -109,8 +109,9 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
 
           <button
             onClick={fetchRecords}
-            className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 cursor-pointer"
+            className="min-h-[36px] min-w-[36px] flex items-center justify-center p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 cursor-pointer touch-manipulation"
             title="Refresh"
+            aria-label="Refresh records"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -144,7 +145,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
               <div
                 key={item._id}
                 onClick={() => setSelectedRecord(item)}
-                className="p-4 rounded-xl bg-white dark:bg-[#121812] border border-zinc-200 dark:border-zinc-800 hover:border-amber-400/50 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between"
+                className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-[#121812] border border-zinc-200 dark:border-zinc-800 hover:border-amber-400/50 hover:shadow-md transition-all cursor-pointer flex flex-col justify-between touch-manipulation active:scale-[0.99]"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -208,21 +209,22 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
 
       {/* Detail Modal */}
       {selectedRecord && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-2xl w-full max-h-[88vh] overflow-y-auto p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-2xl w-full max-h-[92dvh] sm:max-h-[88vh] overflow-y-auto p-4 sm:p-6 shadow-2xl space-y-4">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
               <div>
                 <span className="text-xs uppercase font-bold text-amber-600 dark:text-amber-400">
                   {selectedRecord.scores.uniqueResultCode || selectedRecord.type.toUpperCase()}
                 </span>
-                <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
                   {selectedModalReport?.title || selectedRecord.generatedReport?.title}
                 </h2>
               </div>
               <button
                 onClick={() => setSelectedRecord(null)}
-                className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 text-sm font-bold p-1.5 cursor-pointer rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 text-sm font-bold p-2 min-h-[40px] min-w-[40px] flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 touch-manipulation"
+                aria-label="Close modal"
               >
                 ✕
               </button>
@@ -301,7 +303,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
                   </div>
                 )}
 
-                {selectedModalReport.donts && selectedModalReport.donts.length > 0 && (
+                {selectedModalReport?.donts && selectedModalReport.donts.length > 0 && (
                   <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20">
                     <div className="flex items-center gap-1.5 text-xs font-bold text-amber-700 dark:text-amber-400 mb-2 uppercase">
                       <AlertTriangle className="w-3.5 h-3.5" />
@@ -357,10 +359,10 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
             )}
 
             {/* Modal Actions */}
-            <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+            <div className="mt-4 pt-3 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-2.5">
               <button
                 onClick={() => window.print()}
-                className="px-4 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 font-semibold text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center gap-1.5 cursor-pointer"
+                className="w-full sm:w-auto min-h-[44px] px-4 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700 font-semibold text-xs text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center gap-1.5 cursor-pointer touch-manipulation active:scale-[0.98]"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>{t.printReport}</span>
@@ -368,7 +370,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
 
               <button
                 onClick={() => setSelectedRecord(null)}
-                className="px-5 py-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 font-bold text-xs text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-700 cursor-pointer"
+                className="w-full sm:w-auto min-h-[44px] px-5 py-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 font-bold text-xs text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-700 cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center"
               >
                 {t.close}
               </button>
