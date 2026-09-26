@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Eye,
   Sparkles,
@@ -8,39 +8,55 @@ import {
   Printer,
   HelpCircle,
   Clock,
-  Loader2,
-  Volume2,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useThemeLanguage } from '../../context/ThemeLanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { localizeReport } from '../../utils/reportTranslator';
+import { PreInstructionsModal } from './PreInstructionsModal';
+import { EyePreTest } from './EyePreTest';
+import { ColorTest } from './ColorTest';
+import { ReadingTest } from './ReadingTest';
+import { EyeModeSelect } from './EyeModeSelect';
+import { EyeSymptomForm } from './EyeSymptomForm';
+import {
+  COLOR_STAGE_COUNT,
+  EYE_MODE_ORDER,
+  READING_STAGE_COUNT,
+  emptyYesNoAnswers,
+  type EyeMode,
+  type ScreenTimeOption,
+  type YesNoAnswers,
+  type YesNoKey,
+} from './eyeTestData';
+
+type Phase = 'pretest' | 'color' | 'readingSelect' | 'reading' | 'questions' | 'report';
+
+type EyeScores = Record<EyeMode, number>;
+
+const emptyEyeScores = (): EyeScores => ({ left: 0, right: 0, both: 0 });
 
 export const EyeAssessment: React.FC = () => {
   const { t, apiUrl, language } = useThemeLanguage();
   const { token } = useAuth();
+  const isTamil = language === 'ta';
 
-  // Workflow phases: 'color' | 'acuity' | 'questions' | 'analyzing' | 'report'
-  const [phase, setPhase] = useState<'color' | 'acuity' | 'questions' | 'analyzing' | 'report'>('color');
+  const [phase, setPhase] = useState<Phase>('pretest');
+  const [isInstructionsOpen, setIsInstructionsOpen] = useState<boolean>(false);
 
-  // Phase 1: Color Game States (10 stages)
+  // Phase 1: Colour test (10 stages, 10s each)
   const [colorStage, setColorStage] = useState<number>(1);
-  const [targetTileIndex, setTargetTileIndex] = useState<number>(0);
-  const [baseColor, setBaseColor] = useState<{ h: number; s: number; l: number }>({ h: 45, s: 80, l: 50 });
-  const [deltaL, setDeltaL] = useState<number>(24);
   const [colorScore, setColorScore] = useState<number>(0);
   const [colorStagesPassed, setColorStagesPassed] = useState<number>(0);
-  const [wrongClickIndex, setWrongClickIndex] = useState<number | null>(null);
-  const [isTransitioningStage, setIsTransitioningStage] = useState<boolean>(false);
 
-  // Phase 2: Acuity Game States (5 sizes: very big to very small)
-  const [acuityIndex, setAcuityIndex] = useState<number>(0);
-  const [acuityScore, setAcuityScore] = useState<number>(0);
+  // Phase 2: Reading test — left, right and both, 5 stages each
+  const [activeMode, setActiveMode] = useState<EyeMode>('left');
+  const [readingStage, setReadingStage] = useState<number>(0);
+  const [eyeScores, setEyeScores] = useState<EyeScores>(emptyEyeScores);
 
   // Phase 3: Questionnaire
-  const [dryEyes, setDryEyes] = useState<boolean>(false);
-  const [havePower, setHavePower] = useState<boolean>(false);
-  const [powerType, setPowerType] = useState<'positive' | 'negative'>('negative');
+  const [screenTime, setScreenTime] = useState<ScreenTimeOption | null>(null);
+  const [answers, setAnswers] = useState<YesNoAnswers>(emptyYesNoAnswers);
 
   // Report & API
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,99 +64,84 @@ export const EyeAssessment: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Localized report ensures instant, accurate Tamil translation even on language toggles
   const displayReport = useMemo(() => localizeReport(report, language), [report, language]);
 
-  // Generate color stage configuration
-  const setupColorStage = (stageNum: number) => {
-    const hues = [45, 140, 200, 280, 15, 85, 320, 175, 60, 230];
-    const h = hues[(stageNum - 1) % hues.length];
-    const s = 70;
-    const l = 48;
-
-    const deltas = [26, 20, 15, 11, 8.5, 6.5, 4.8, 3.6, 2.7, 2.0];
-    const delta = deltas[stageNum - 1] || 2.0;
-
-    const randomIndex = Math.floor(Math.random() * 16);
-
-    setBaseColor({ h, s, l });
-    setDeltaL(delta);
-    setTargetTileIndex(randomIndex);
-    setWrongClickIndex(null);
-    setIsTransitioningStage(false);
-  };
-
-  useEffect(() => {
-    if (phase === 'color') {
-      setupColorStage(colorStage);
-    }
-  }, [colorStage, phase]);
-
-  const handleTileClick = (index: number) => {
-    if (isTransitioningStage) return;
-
-    if (index === targetTileIndex) {
-      const earned = 10;
-      setColorScore((prev) => prev + earned);
+  const handleColorStageComplete = (correct: boolean) => {
+    if (correct) {
+      setColorScore((prev) => prev + 10);
       setColorStagesPassed((prev) => prev + 1);
+    }
 
-      if (colorStage < 10) {
-        setColorStage((prev) => prev + 1);
-      } else {
-        setPhase('acuity');
-      }
+    if (colorStage < COLOR_STAGE_COUNT) {
+      setColorStage((prev) => prev + 1);
     } else {
-      // Wrong tile clicked: mark as incorrect and auto-advance to next stage
-      setWrongClickIndex(index);
-      setIsTransitioningStage(true);
-
-      setTimeout(() => {
-        setWrongClickIndex(null);
-        setIsTransitioningStage(false);
-
-        if (colorStage < 10) {
-          setColorStage((prev) => prev + 1);
-        } else {
-          setPhase('acuity');
-        }
-      }, 700);
+      setPhase('readingSelect');
     }
   };
 
-  // Sentences array for Acuity Test
-  const acuitySentences = [
-    { text: t.sentVeryBig, sizeClass: 'text-2xl sm:text-3xl md:text-4xl font-bold', label: language === 'ta' ? 'மிகப் பெரியது' : 'Very Big' },
-    { text: t.sentBig, sizeClass: 'text-lg sm:text-xl md:text-2xl font-semibold', label: language === 'ta' ? 'பெரியது' : 'Big' },
-    { text: t.sentMedium, sizeClass: 'text-sm sm:text-base md:text-lg font-medium', label: language === 'ta' ? 'நடுத்தரம்' : 'Medium' },
-    { text: t.sentSmall, sizeClass: 'text-xs sm:text-sm font-normal', label: language === 'ta' ? 'சிறியது' : 'Small' },
-    { text: t.sentVerySmall, sizeClass: 'text-[10px] sm:text-[11px] font-normal leading-tight tracking-tight', label: language === 'ta' ? 'மிகச் சிறியது' : 'Very Small' },
-  ];
-
-  const handleAcuityAnswer = (canRead: boolean) => {
+  const handleReadingAnswer = (canRead: boolean) => {
+    const mode = activeMode;
     if (canRead) {
-      setAcuityScore((prev) => prev + 1);
+      setEyeScores((prev) => ({ ...prev, [mode]: prev[mode] + 1 }));
     }
 
-    if (acuityIndex < 4) {
-      setAcuityIndex((prev) => prev + 1);
+    if (readingStage < READING_STAGE_COUNT - 1) {
+      setReadingStage((prev) => prev + 1);
+      return;
+    }
+
+    // Finished the current eye test — advance to the next one, or the questionnaire
+    const nextModeIndex = EYE_MODE_ORDER.indexOf(mode) + 1;
+    if (nextModeIndex < EYE_MODE_ORDER.length) {
+      setActiveMode(EYE_MODE_ORDER[nextModeIndex]);
+      setReadingStage(0);
     } else {
       setPhase('questions');
     }
   };
 
-  // Submit complete Eye Assessment
+  const startMode = (mode: EyeMode) => {
+    setActiveMode(mode);
+    setReadingStage(0);
+    setPhase('reading');
+  };
+
+  const handleAnswerChange = (key: YesNoKey, value: boolean) => {
+    setAnswers((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const totalAcuityScore = eyeScores.left + eyeScores.right + eyeScores.both;
+
   const submitEyeAssessment = async () => {
     setIsAnalyzing(true);
     setErrorMsg(null);
 
     try {
+      const symptomCount = [
+        answers.phoneAtNight,
+        answers.eyeIrritation,
+        answers.wateryEyes,
+        answers.headache,
+        answers.blurryVision,
+      ].filter((v) => v === true).length;
+
       const payload = {
         colorStagesPassed,
         colorPoints: colorScore,
-        acuityScore,
-        dryEyes,
-        havePower,
-        powerType: havePower ? powerType : 'none',
+        acuityScore: totalAcuityScore,
+        dryEyes: answers.eyeIrritation === true || answers.wateryEyes === true,
+        havePower: false,
+        powerType: 'none',
+        screenTime,
+        usingPhoneAtNight: answers.phoneAtNight === true,
+        eyeIrritationDuringTest: answers.eyeIrritation === true,
+        wateryEyesDuringTest: answers.wateryEyes === true,
+        headacheAfterScreenUse: answers.headache === true,
+        blurryVisionAfterProlongedUse: answers.blurryVision === true,
+        symptomCount,
+        leftEyeScore: eyeScores.left,
+        rightEyeScore: eyeScores.right,
+        bothEyesScore: eyeScores.both,
         language,
       };
 
@@ -159,7 +160,6 @@ export const EyeAssessment: React.FC = () => {
         setReport(data.report);
         setPhase('report');
 
-        // Save result to user profile in MongoDB
         if (token) {
           fetch(`${apiUrl}/api/auth/add-result`, {
             method: 'POST',
@@ -200,19 +200,18 @@ export const EyeAssessment: React.FC = () => {
   };
 
   const resetEyeTest = () => {
+    setPhase('pretest');
+    setIsInstructionsOpen(false);
     setColorStage(1);
     setColorScore(0);
     setColorStagesPassed(0);
-    setWrongClickIndex(null);
-    setIsTransitioningStage(false);
-    setAcuityIndex(0);
-    setAcuityScore(0);
-    setDryEyes(false);
-    setHavePower(false);
-    setPowerType('negative');
+    setActiveMode('left');
+    setReadingStage(0);
+    setEyeScores(emptyEyeScores());
+    setScreenTime(null);
+    setAnswers(emptyYesNoAnswers());
     setReport(null);
     setErrorMsg(null);
-    setPhase('color');
   };
 
   return (
@@ -238,296 +237,68 @@ export const EyeAssessment: React.FC = () => {
         </div>
       )}
 
-      {/* PHASE 1: 10-STAGE COLOR DIFFERENTIATION TEST */}
+      {/* STEP 0: SAMPLE / PRE-TEST PAGE */}
+      {phase === 'pretest' && <EyePreTest onStartTest={() => setIsInstructionsOpen(true)} />}
+
+      {/* STEP 1: COLOUR TEST (10 stages x 10s) */}
       {phase === 'color' && (
-        <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-8 shadow-sm">
-          {/* Stage Progress Bar */}
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                {t.stage} {colorStage} {t.of} 10
-              </span>
-              <span className="text-[11px] sm:text-xs text-zinc-600 dark:text-zinc-400 font-medium">
-                ({language === 'ta' ? 'சிரமம்' : 'Difficulty'}: {Math.round((colorStage / 10) * 100)}%)
-              </span>
-            </div>
-            <div className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-              {t.colorScoreLabel}: <span className="text-lime-600 dark:text-lime-400 font-extrabold">{colorScore}</span> {language === 'ta' ? 'புள்ளிகள்' : 'pts'}
-            </div>
-          </div>
-
-          <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden mb-4 sm:mb-6">
-            <div
-              className="bg-gradient-to-r from-amber-500 to-lime-500 h-full transition-all duration-300 rounded-full"
-              style={{ width: `${(colorStage / 10) * 100}%` }}
-            />
-          </div>
-
-          <div className="text-center mb-4 sm:mb-6">
-            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">{t.phase1Title}</h2>
-            <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">{t.tapDifferentTile}</p>
-          </div>
-
-          {/* 4x4 Grid of 16 Color Tiles - Constrained to prevent horizontal overflow on small phones */}
-          <div className="w-full max-w-[310px] sm:max-w-[360px] md:max-w-md mx-auto aspect-square p-2.5 sm:p-4 bg-zinc-100 dark:bg-zinc-900/90 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-inner grid grid-cols-4 gap-2 sm:gap-3 touch-manipulation select-none">
-            {Array.from({ length: 16 }).map((_, idx) => {
-              const isTarget = idx === targetTileIndex;
-              const tileL = isTarget ? Math.min(85, baseColor.l + deltaL) : baseColor.l;
-              const tileBg = `hsl(${baseColor.h}, ${baseColor.s}%, ${tileL}%)`;
-              const isWrong = wrongClickIndex === idx;
-
-              return (
-                <button
-                  key={idx}
-                  onClick={() => handleTileClick(idx)}
-                  disabled={isTransitioningStage}
-                  style={{ backgroundColor: tileBg }}
-                  className={`w-full h-full rounded-xl transition-all duration-150 active:scale-95 shadow-xs hover:opacity-95 cursor-pointer relative flex items-center justify-center touch-manipulation select-none ${
-                    isWrong ? 'ring-4 ring-red-500 scale-95 duration-150 bg-red-500/30' : ''
-                  }`}
-                  aria-label={`Color tile ${idx + 1}`}
-                >
-                  {isWrong && (
-                    <span className="text-white text-lg sm:text-2xl font-black bg-red-600/95 rounded-full w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center shadow-lg animate-bounce">
-                      ✕
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Feedback banner on wrong click */}
-          {wrongClickIndex !== null && (
-            <div className="mt-3 text-center text-xs font-bold text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/20 py-1.5 px-4 rounded-xl max-w-md mx-auto animate-pulse flex items-center justify-center gap-1.5">
-              <span>✕</span>
-              <span>{language === 'ta' ? 'தவறான தேர்வு! அடுத்த நிலைக்குச் செல்கிறது...' : 'Incorrect tile! Skipping to next stage...'}</span>
-            </div>
-          )}
-
-          {/* Helper info footer */}
-          <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-800 pt-4">
-            <div className="flex items-center gap-3">
-              <span>• {language === 'ta' ? 'மொத்தம் 16 வண்ண கட்டங்கள்' : '16 color tiles total'}</span>
-              <span>• {language === 'ta' ? '1 மாறுபட்ட கட்டம்' : '1 unique shade'}</span>
-            </div>
-            <button
-              onClick={() => setPhase('acuity')}
-              className="text-amber-600 dark:text-amber-400 hover:underline font-semibold cursor-pointer touch-manipulation py-1"
-            >
-              {t.skipToReading}
-            </button>
-          </div>
-        </div>
+        <ColorTest
+          stage={colorStage}
+          onStageComplete={handleColorStageComplete}
+          onSkipAll={() => setPhase('readingSelect')}
+        />
       )}
 
-      {/* PHASE 2: VISUAL ACUITY READING TEST */}
-      {phase === 'acuity' && (
-        <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-8 shadow-sm">
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <span className="text-xs font-bold uppercase tracking-wider text-lime-600 dark:text-lime-400 truncate max-w-[200px] sm:max-w-none">
-              {t.sentenceLevel} {acuityIndex + 1} {t.of} 5: {acuitySentences[acuityIndex].label}
-            </span>
-            <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 shrink-0">
-              {t.readingAcuityLabel}: {acuityScore} / 5
-            </span>
-          </div>
-
-          <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden mb-4 sm:mb-6">
-            <div
-              className="bg-gradient-to-r from-lime-500 to-amber-500 h-full transition-all duration-300 rounded-full"
-              style={{ width: `${((acuityIndex + 1) / 5) * 100}%` }}
-            />
-          </div>
-
-          <div className="text-center mb-4 sm:mb-6">
-            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">{t.phase2Title}</h2>
-            <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-lg bg-amber-400/10 border border-amber-400/20 text-xs text-amber-700 dark:text-amber-300 font-medium">
-              <Volume2 className="w-3.5 h-3.5 shrink-0" />
-              <span>{t.distanceTip}</span>
-            </div>
-          </div>
-
-          {/* Reading Display Box */}
-          <div className="min-h-[140px] sm:min-h-[160px] p-4 sm:p-8 bg-zinc-50 dark:bg-zinc-900/70 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-center my-4 sm:my-6 overflow-hidden">
-            <p
-              className={`${acuitySentences[acuityIndex].sizeClass} text-zinc-900 dark:text-zinc-100 transition-all duration-300 max-w-xl break-words`}
-            >
-              {acuitySentences[acuityIndex].text}
-            </p>
-          </div>
-
-          {/* Prompt */}
-          <p className="text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200 text-center mb-4">
-            {t.canYouReadPrompt}
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 max-w-lg mx-auto">
-            <button
-              onClick={() => handleAcuityAnswer(true)}
-              className="min-h-[44px] py-3 px-4 rounded-xl bg-lime-500 hover:bg-lime-400 text-zinc-950 font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-[0.98] cursor-pointer touch-manipulation flex items-center justify-center"
-            >
-              {t.canReadBtn}
-            </button>
-            <button
-              onClick={() => handleAcuityAnswer(false)}
-              className="min-h-[44px] py-3 px-4 rounded-xl bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 font-semibold text-xs sm:text-sm transition-all active:scale-[0.98] cursor-pointer touch-manipulation flex items-center justify-center"
-            >
-              {t.cannotReadBtn}
-            </button>
-          </div>
-        </div>
+      {/* STEP 2A: EYE MODE SELECTION */}
+      {phase === 'readingSelect' && (
+        <EyeModeSelect
+          scores={eyeScores}
+          onSelect={startMode}
+          onBack={() => setPhase('color')}
+        />
       )}
 
-      {/* PHASE 3: QUESTIONNAIRE */}
+      {/* STEP 2B: READING TEST FOR THE ACTIVE EYE MODE */}
+      {phase === 'reading' && (
+        <ReadingTest
+          mode={activeMode}
+          stageIndex={readingStage}
+          correctCount={eyeScores[activeMode]}
+          onAnswer={handleReadingAnswer}
+          onQuit={() => {
+            const nextModeIndex = EYE_MODE_ORDER.indexOf(activeMode) + 1;
+            if (nextModeIndex < EYE_MODE_ORDER.length) {
+              setActiveMode(EYE_MODE_ORDER[nextModeIndex]);
+              setReadingStage(0);
+            } else {
+              setPhase('questions');
+            }
+          }}
+        />
+      )}
+
+      {/* STEP 3: SYMPTOM QUESTIONNAIRE */}
       {phase === 'questions' && (
-        <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="border-b border-zinc-200 dark:border-zinc-800 pb-3">
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{t.phase3Title}</h2>
-            <p className="text-xs text-zinc-700 dark:text-zinc-300">
-              {t.eyePhase3Desc}
-            </p>
-          </div>
-
-          {/* Test Performance Recap Pill */}
-          <div className="grid grid-cols-2 gap-3 p-3 bg-zinc-50 dark:bg-zinc-900/60 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs">
-            <div>
-              <span className="text-zinc-600 dark:text-zinc-400">{t.colorDiscriminationLabel}:</span>{' '}
-              <span className="font-bold text-amber-600 dark:text-amber-400">{colorScore} {language === 'ta' ? 'புள்ளிகள்' : 'pts'} (10/10)</span>
-            </div>
-            <div>
-              <span className="text-zinc-600 dark:text-zinc-400">{t.readingAcuityLabel}:</span>{' '}
-              <span className="font-bold text-lime-600 dark:text-lime-400">{acuityScore} / 5</span>
-            </div>
-          </div>
-
-          {/* Question 1: Dry Eyes */}
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-              {t.dryEyesPrompt}
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setDryEyes(true)}
-                className={`py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                  dryEyes
-                    ? 'bg-amber-500/20 border-amber-500 text-amber-700 dark:text-amber-300'
-                    : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
-                }`}
-              >
-                {t.yes}
-              </button>
-              <button
-                type="button"
-                onClick={() => setDryEyes(false)}
-                className={`py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                  !dryEyes
-                    ? 'bg-lime-500/20 border-lime-500 text-lime-700 dark:text-lime-300'
-                    : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
-                }`}
-              >
-                {t.no}
-              </button>
-            </div>
-          </div>
-
-          {/* Question 2: Have Power */}
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-              {t.havePowerPrompt}
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setHavePower(true)}
-                className={`py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                  havePower
-                    ? 'bg-amber-500/20 border-amber-500 text-amber-700 dark:text-amber-300'
-                    : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
-                }`}
-              >
-                {t.yes}
-              </button>
-              <button
-                type="button"
-                onClick={() => setHavePower(false)}
-                className={`py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                  !havePower
-                    ? 'bg-lime-500/20 border-lime-500 text-lime-700 dark:text-lime-300'
-                    : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
-                }`}
-              >
-                {t.no}
-              </button>
-            </div>
-          </div>
-
-          {/* Conditional Question: Positive or Negative */}
-          {havePower && (
-            <div className="space-y-2 p-3 sm:p-4 rounded-xl bg-amber-400/5 border border-amber-400/20">
-              <label className="block text-xs sm:text-sm font-semibold text-amber-700 dark:text-amber-300">
-                {t.powerTypePrompt}
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-                <button
-                  type="button"
-                  onClick={() => setPowerType('positive')}
-                  className={`min-h-[44px] py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center ${
-                    powerType === 'positive'
-                      ? 'bg-amber-500 border-amber-500 text-zinc-950 font-bold'
-                      : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
-                  }`}
-                >
-                  {t.powerPositive}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPowerType('negative')}
-                  className={`min-h-[44px] py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center ${
-                    powerType === 'negative'
-                      ? 'bg-lime-500 border-lime-500 text-zinc-950 font-bold'
-                      : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
-                  }`}
-                >
-                  {t.powerNegative}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Submit Button */}
-          <div className="pt-4 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800">
-            <button
-              onClick={() => setPhase('acuity')}
-              className="w-full sm:w-auto min-h-[40px] text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center justify-center gap-1 cursor-pointer touch-manipulation"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>{t.backToReadingTest}</span>
-            </button>
-
-            <button
-              onClick={submitEyeAssessment}
-              disabled={isAnalyzing}
-              className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lime-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-zinc-950 font-bold text-sm shadow-md shadow-lime-500/20 active:scale-[0.98] transition-all cursor-pointer touch-manipulation"
-            >
-              {isAnalyzing ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>{t.aiConsulting}</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4" />
-                  <span>{t.submitEyeAnalysis}</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
+        <EyeSymptomForm
+          screenTime={screenTime}
+          onScreenTimeChange={setScreenTime}
+          answers={answers}
+          onAnswerChange={handleAnswerChange}
+          colorPassed={colorStagesPassed}
+          leftScore={eyeScores.left}
+          rightScore={eyeScores.right}
+          bothScore={eyeScores.both}
+          isSubmitting={isAnalyzing}
+          onSubmit={submitEyeAssessment}
+          onBack={() => {
+            setActiveMode('both');
+            setReadingStage(0);
+            setPhase('reading');
+          }}
+        />
       )}
 
-      {/* PHASE 4: AI REPORT */}
+      {/* STEP 4: AI REPORT */}
       {phase === 'report' && displayReport && (
         <div className="space-y-6">
           <div className="bg-white dark:bg-[#121812] border border-lime-500/40 dark:border-amber-400/30 rounded-2xl p-4 sm:p-8 shadow-lg relative overflow-hidden">
@@ -542,12 +313,9 @@ export const EyeAssessment: React.FC = () => {
                 <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-50 mt-0.5">
                   {displayReport.title}
                 </h2>
-                <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">
-                  {t.eyeReportEval}
-                </p>
+                <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">{t.eyeReportEval}</p>
               </div>
 
-              {/* Overall Score */}
               <div className="flex items-center justify-between sm:justify-end gap-3 bg-zinc-50 dark:bg-zinc-900/80 p-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 w-full sm:w-auto shrink-0">
                 <div className="text-left sm:text-right">
                   <div className="text-[10px] uppercase font-bold text-zinc-600 dark:text-zinc-400">
@@ -560,10 +328,16 @@ export const EyeAssessment: React.FC = () => {
                 </div>
                 <div className="w-12 h-12 rounded-full border-4 border-lime-500/40 border-t-amber-400 flex items-center justify-center font-bold text-xs text-zinc-800 dark:text-zinc-200">
                   {displayReport.overallScore >= 80
-                    ? language === 'ta' ? 'சிறந்தது' : 'Optimal'
+                    ? isTamil
+                      ? 'சிறந்தது'
+                      : 'Optimal'
                     : displayReport.overallScore >= 60
-                    ? language === 'ta' ? 'சீரானது' : 'Standard'
-                    : language === 'ta' ? 'கண் சோர்வு' : 'Mild Strain'}
+                    ? isTamil
+                      ? 'சீரானது'
+                      : 'Standard'
+                    : isTamil
+                    ? 'கண் சோர்வு'
+                    : 'Mild Strain'}
                 </div>
               </div>
             </div>
@@ -584,7 +358,8 @@ export const EyeAssessment: React.FC = () => {
                   {t.eyeAcuityTier}
                 </div>
                 <div className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mt-0.5">
-                  {displayReport.grade} ({displayReport.acuityScore}/5 {language === 'ta' ? 'வாக்கியங்கள்' : 'sizes'})
+                  {displayReport.grade} ({displayReport.acuityScore}/{READING_STAGE_COUNT * EYE_MODE_ORDER.length}{' '}
+                  {isTamil ? 'சொற்கள்' : 'words'})
                 </div>
               </div>
             </div>
@@ -686,6 +461,7 @@ export const EyeAssessment: React.FC = () => {
             {/* Actions */}
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-800">
               <button
+                type="button"
                 onClick={resetEyeTest}
                 className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer touch-manipulation active:scale-[0.98]"
               >
@@ -694,6 +470,7 @@ export const EyeAssessment: React.FC = () => {
               </button>
 
               <button
+                type="button"
                 onClick={() => window.print()}
                 className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-lime-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-zinc-950 font-bold text-xs shadow-md shadow-lime-500/20 transition-all cursor-pointer touch-manipulation active:scale-[0.98]"
               >
@@ -704,6 +481,17 @@ export const EyeAssessment: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* PRE-INSTRUCTIONS MODAL — opened from the pre-test page, OK opens colour test */}
+      <PreInstructionsModal
+        isOpen={isInstructionsOpen}
+        onClose={() => setIsInstructionsOpen(false)}
+        onStart={() => {
+          setIsInstructionsOpen(false);
+          setColorStage(1);
+          setPhase('color');
+        }}
+      />
     </div>
   );
 };

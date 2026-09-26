@@ -194,6 +194,50 @@ export interface Translations {
   backToReadingTest: string;
   aiConsulting: string;
   aiAnalyzing: string;
+
+  // Pre-Test Instructions
+  preTestTitle: string;
+  preTestSubtitle: string;
+  preTestInstructions: string[];
+  preTestStartBtn: string;
+  preTestSkipBtn: string;
+
+  // Color Test Timer
+  colorTimerLabel: string;
+  colorStageComplete: string;
+
+  // Reading Test - Eye Selection
+  readingEyeSelectionTitle: string;
+  readingEyeSelectionDesc: string;
+  leftEyeBtn: string;
+  rightEyeBtn: string;
+  bothEyesBtn: string;
+  leftEyeLabel: string;
+  rightEyeLabel: string;
+  bothEyesLabel: string;
+  readingStage: string;
+  readingStageOf: string;
+  readingProgressLabel: string;
+  readingCanRead: string;
+  readingCannotRead: string;
+  readingComplete: string;
+  readingNextEye: string;
+  readingCoverEyeTip: string;
+  readingWords: string[];
+
+  // Questionnaire - New Questions
+  screenTimePrompt: string;
+  screenTimeBelow1hr: string;
+  screenTime1to3hr: string;
+  screenTimeAbove3hr: string;
+  phoneAtNightPrompt: string;
+  eyeIrritationPrompt: string;
+  wateryEyesPrompt: string;
+  headachePrompt: string;
+  blurryVisionPrompt: string;
+
+  // Common
+  next: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -389,6 +433,70 @@ export const translations: Record<Language, Translations> = {
     backToReadingTest: 'Back to Reading Test',
     aiConsulting: 'AI is preparing your report...',
     aiAnalyzing: 'AI is analyzing your photo...',
+
+    // Pre-Test Instructions
+    preTestTitle: 'Eye Checkup Instructions',
+    preTestSubtitle: 'Please read the following instructions carefully before starting the test',
+    preTestInstructions: [
+      'Sit comfortably at arm\'s length (~50 cm) from your screen',
+      'Ensure good lighting without glare on the screen',
+      'Do not wear sunglasses or tinted lenses during the test',
+      'Test each eye separately as instructed',
+      'The color test has 10 stages with 10-second timers',
+      'The reading test has 3 modes: Left Eye, Right Eye, Both Eyes',
+      'Each reading mode has 5 text size stages',
+      'Answer honestly for accurate AI assessment'
+    ],
+    preTestStartBtn: 'Start Test',
+    preTestSkipBtn: 'Skip Instructions',
+
+    // Color Test Timer
+    colorTimerLabel: 'Time Remaining',
+    colorStageComplete: 'Stage Complete!',
+
+    // Reading Test - Eye Selection
+    readingEyeSelectionTitle: 'Select Eye Test Mode',
+    readingEyeSelectionDesc: 'Choose which eye to test. Each mode has 5 stages of decreasing text size.',
+    leftEyeBtn: 'Left Eye Test',
+    rightEyeBtn: 'Right Eye Test',
+    bothEyesBtn: 'Both Eyes Test',
+    leftEyeLabel: 'Left Eye',
+    rightEyeLabel: 'Right Eye',
+    bothEyesLabel: 'Both Eyes',
+    readingStage: 'Stage',
+    readingStageOf: 'of',
+    readingProgressLabel: 'Reading Score',
+    readingCanRead: 'Yes, I can read it',
+    readingCannotRead: 'No, it\'s blurry',
+    readingComplete: 'Test Complete!',
+    readingNextEye: 'Next Eye Test',
+    readingCoverEyeTip: 'Keep this eye open and read the words aloud. Cover the other eye with your palm.',
+    readingWords: [
+      'VISION',
+      'LIGHT',
+      'FOCUS',
+      'BRIGHT',
+      'READING',
+      'CLEARLY',
+      'BLINKING',
+      'DISTANT',
+      'PREVENT',
+      'PROTECTED',
+    ],
+
+    // Questionnaire - New Questions
+    screenTimePrompt: 'What is your average daily screen time?',
+    screenTimeBelow1hr: 'Below 1 hour',
+    screenTime1to3hr: '1 to 3 hours',
+    screenTimeAbove3hr: 'Above 3 hours',
+    phoneAtNightPrompt: 'Do you use your phone in bed at night?',
+    eyeIrritationPrompt: 'Did you experience eye irritation during the test?',
+    wateryEyesPrompt: 'Did your eyes water during the test?',
+    headachePrompt: 'Do you get headaches after prolonged screen use?',
+    blurryVisionPrompt: 'Do you experience blurry vision after prolonged screen use?',
+
+    // Common
+    next: 'Next',
   },
 
   ta: {
@@ -583,5 +691,69 @@ export const translations: Record<Language, Translations> = {
     backToReadingTest: 'வாசிப்பு சோதனைக்கு திரும்பவும்',
     aiConsulting: 'AI உங்கள் அறிக்கையை தயாரிக்கிறது...',
     aiAnalyzing: 'AI உங்கள் புகைப்படத்தை பகுப்பாய்கிறது...',
+
+    // Pre-Test Instructions
+    preTestTitle: 'கண் பரிசோதனை வழிமுறைகள்',
+    preTestSubtitle: 'பரிசோதனையைத் தொடங்குவதற்கு முன் பின்வரும் வழிமுறைகளை கவனமாகப் படிக்கவும்',
+    preTestInstructions: [
+      'உங்கள் திரையிலிருந்து ஒரு கை தூரத்தில் (~50 செ.மீ) சமநிலையாக அமரவும்',
+      'திரையில் ஒளிப்பிரதிபிம்பம் இல்லாமல் நல்ல வெளிச்சம் இருப்பதை உறுதிசெய்யவும்',
+      'பரிசோதனை காலத்தில் சன் கிளாஸ்கள் அல்லது நிற வண்ணமுள்ள லென்ஸ்களை அணியாதீர்கள்',
+      'வழிமுறைகளைப் பின்பற்றி ஒவ்வொரு கணையும் தனித்தனியாகப் பரிசோதிக்கவும்',
+      'வண்ண பரிசோதனையில் 10 நிலைகள் உள்ளன, ஒவ்வொரு நிலைக்கும் 10 வினாடிகள்',
+      'வாசிப்பு பரிசோதனையில் 3 பயன்முறைகள் உள்ளன: இடது கண், வலது கண், இரு கண்களும்',
+      'ஒவ்வொரு வாசிப்பு பயன்முறையிலும் வாக்கிய அளவு குறையும் வரிசையில் 5 நிலைகள் உள்ளன',
+      'சரியான AI மதிப்பீட்டிற்காக கேள்விகளுக்கு நேராகப் பதிலளிக்கவும்'
+    ],
+    preTestStartBtn: 'பரிசோதனையைத் தொடங்கு',
+    preTestSkipBtn: 'வழிமுறைகளைத் தவிர்க்கவும்',
+
+    // Color Test Timer
+    colorTimerLabel: 'மீதமுள்ள நேரம்',
+    colorStageComplete: 'நிலை முடிந்தது!',
+
+    // Reading Test - Eye Selection
+    readingEyeSelectionTitle: 'கண் பரிசோதனை பயன்முறையைத் தேர்வு செய்யவும்',
+    readingEyeSelectionDesc: 'எந்த கண் பரிசோதிக்க வேண்டும் என்பதைத் தேர்வு செய்யவும். ஒவ்வொரு பயன்முறையிலும் வாக்கிய அளவு குறைவடைந்து 5 நிலைகள் உள்ளன.',
+    leftEyeBtn: 'இடது கண் பரிசோதனை',
+    rightEyeBtn: 'வலது கண் பரிசோதனை',
+    bothEyesBtn: 'இரு கண்களும் பரிசோதனை',
+    leftEyeLabel: 'இடது கண்',
+    rightEyeLabel: 'வலது கண்',
+    bothEyesLabel: 'இரு கண்களும்',
+    readingStage: 'நிலை',
+    readingStageOf: 'இல்',
+    readingProgressLabel: 'வாசிப்பு மதிப்பெண்',
+    readingCanRead: 'ஆம், என்னால் படிக்க முடிகிறது',
+    readingCannotRead: 'இல்லை, மங்கலாக உள்ளது',
+    readingComplete: 'பரிசோதனை முடிந்தது!',
+    readingNextEye: 'அடுத்த கண் பரிசோதனை',
+    readingCoverEyeTip: 'இந்தக் கண்ணைத் திறந்து வைத்து சொற்களைப் படித்துச் சொல்லவும். மற்ற கண்ணை உங்கள் கைத்தட்டால் மூடவும்.',
+    readingWords: [
+      'பார்வை',
+      'வெளிச்சம்',
+      'கவனம்',
+      'ஒளி',
+      'வாசிப்பு',
+      'தெளிவாக',
+      'இமைத்தல்',
+      'தொலைவில்',
+      'தடுக்க',
+      'காப்பு',
+    ],
+
+    // Questionnaire - New Questions
+    screenTimePrompt: 'உங்கள் சராசரி நாளாந்த திரை பயன்படுத்தும் நேரம் எவ்வளவு?',
+    screenTimeBelow1hr: '1 மணிக்குறினும் குறைவு',
+    screenTime1to3hr: '1 முதல் 3 மணி வரை',
+    screenTimeAbove3hr: '3 மணிக்கு மேல்',
+    phoneAtNightPrompt: 'இரவு நேரம் படுக்கையில் பேசியைப் பயன்படுத்துகிறீர்களா?',
+    eyeIrritationPrompt: 'பரிசோதனை போது கண் எரிச்சல் ஏற்பட்டதா?',
+    wateryEyesPrompt: 'பரிசோதனை போது கண்கள் தண்ணீராயிருந்ததா?',
+    headachePrompt: 'நீண்ட நேரம் திரையைப் பயன்படுத்திய பிறகு தலைவலி வருகிறதா?',
+    blurryVisionPrompt: 'நீண்ட நேரம் திரையைப் பயன்படுத்திய பிறகு மங்கலான பார்வை ஏற்படுகிறதா?',
+
+    // Common
+    next: 'அடுத்து',
   },
 };
