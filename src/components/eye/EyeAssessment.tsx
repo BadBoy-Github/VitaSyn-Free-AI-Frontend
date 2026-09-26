@@ -100,8 +100,8 @@ export const EyeAssessment: React.FC = () => {
     }
   };
 
-  const startMode = (mode: EyeMode) => {
-    setActiveMode(mode);
+  const startReadingSequence = () => {
+    setActiveMode(EYE_MODE_ORDER[0]);
     setReadingStage(0);
     setPhase('reading');
   };
@@ -249,14 +249,8 @@ export const EyeAssessment: React.FC = () => {
         />
       )}
 
-      {/* STEP 2A: EYE MODE SELECTION */}
-      {phase === 'readingSelect' && (
-        <EyeModeSelect
-          scores={eyeScores}
-          onSelect={startMode}
-          onBack={() => setPhase('color')}
-        />
-      )}
+      {/* STEP 2A: READING TEST INTRO (showcase, runs left -> right -> both) */}
+      {phase === 'readingSelect' && <EyeModeSelect scores={eyeScores} onStart={startReadingSequence} />}
 
       {/* STEP 2B: READING TEST FOR THE ACTIVE EYE MODE */}
       {phase === 'reading' && (
