@@ -81,9 +81,9 @@ export const ColorTest: React.FC<ColorTestProps> = ({ stage, onStageComplete, on
   const difficulty = Math.round((stage / COLOR_STAGE_COUNT) * 100);
 
   return (
-    <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-8 shadow-sm">
+    <div className="h-full w-full flex flex-col bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-5 shadow-sm">
       {/* Header row: stage + timer */}
-      <div className="flex items-center justify-between gap-3 mb-3 sm:mb-4">
+      <div className="page-fit-band flex items-center justify-between gap-3 mb-2">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
             {t.stage} {stage} {t.of} {COLOR_STAGE_COUNT}
@@ -109,13 +109,13 @@ export const ColorTest: React.FC<ColorTestProps> = ({ stage, onStageComplete, on
       </div>
 
       {/* Progress bars: stage progress + countdown */}
-      <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden mb-2">
+      <div className="page-fit-band w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden mb-2">
         <div
           className="bg-gradient-to-r from-amber-500 to-lime-500 h-full transition-all duration-300 rounded-full"
           style={{ width: `${(stage / COLOR_STAGE_COUNT) * 100}%` }}
         />
       </div>
-      <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-1 rounded-full overflow-hidden mb-4 sm:mb-6">
+      <div className="page-fit-band w-full bg-zinc-200 dark:bg-zinc-800 h-1 rounded-full overflow-hidden mb-3">
         <div
           className={`h-full transition-[width] duration-1000 ease-linear rounded-full ${
             isUrgent ? 'bg-red-500' : 'bg-lime-500'
@@ -124,50 +124,52 @@ export const ColorTest: React.FC<ColorTestProps> = ({ stage, onStageComplete, on
         />
       </div>
 
-      <div className="text-center mb-4 sm:mb-6">
-        <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center justify-center gap-2">
+      <div className="page-fit-band text-center mb-3">
+        <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 flex items-center justify-center gap-2">
           <Palette className="w-4 h-4 text-amber-500" />
           {t.phase1Title}
         </h2>
-        <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">{t.tapDifferentTile}</p>
-        <p className="text-[11px] text-zinc-500 dark:text-zinc-500 mt-1">
+        <p className="text-[11px] text-zinc-700 dark:text-zinc-300 mt-0.5">{t.tapDifferentTile}</p>
+        <p className="text-[10px] text-zinc-500 dark:text-zinc-500">
           {isTamil ? 'நேரம் முடிந்தால் தானாக அடுத்த நிலைக்குச் செல்லும்.' : 'The stage advances automatically when the timer reaches 0.'}
         </p>
       </div>
 
-      {/* 4x4 grid of 16 color tiles */}
-      <div className="w-full max-w-[310px] sm:max-w-[360px] md:max-w-md mx-auto aspect-square p-2.5 sm:p-4 bg-zinc-100 dark:bg-zinc-900/90 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-inner grid grid-cols-4 gap-2 sm:gap-3 touch-manipulation select-none">
-        {Array.from({ length: TILE_COUNT }).map((_, idx) => {
-          const isTarget = idx === targetTileIndex;
-          const tileL = isTarget ? Math.min(85, config.l + config.deltaL) : config.l;
-          const tileBg = `hsl(${config.h}, ${config.s}%, ${tileL}%)`;
-          const isWrong = wrongTileIndex === idx;
-          const isHitTarget = stageResult === 'correct' && isTarget;
+      {/* 4x4 grid of 16 color tiles — sized by the height left over, stays square */}
+      <div className="flex-1 min-h-0 flex items-center justify-center">
+        <div className="h-full max-h-[min(46dvh,420px)] aspect-square max-w-full p-2 sm:p-3 bg-zinc-100 dark:bg-zinc-900/90 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-inner grid grid-cols-4 gap-2 sm:gap-2.5 touch-manipulation select-none">
+          {Array.from({ length: TILE_COUNT }).map((_, idx) => {
+            const isTarget = idx === targetTileIndex;
+            const tileL = isTarget ? Math.min(85, config.l + config.deltaL) : config.l;
+            const tileBg = `hsl(${config.h}, ${config.s}%, ${tileL}%)`;
+            const isWrong = wrongTileIndex === idx;
+            const isHitTarget = stageResult === 'correct' && isTarget;
 
-          return (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => handleTileClick(idx)}
-              disabled={locked}
-              style={{ backgroundColor: tileBg }}
-              className={`w-full h-full rounded-xl transition-all duration-150 active:scale-95 shadow-xs cursor-pointer relative flex items-center justify-center touch-manipulation select-none ${
-                isWrong ? 'ring-4 ring-red-500 scale-95 bg-red-500/30' : ''
-              } ${isHitTarget ? 'ring-4 ring-lime-500' : ''} ${locked ? 'opacity-70' : 'hover:opacity-95'}`}
-              aria-label={`Color tile ${idx + 1}`}
-            >
-              {isWrong && (
-                <span className="text-white text-lg sm:text-2xl font-black bg-red-600/95 rounded-full w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center shadow-lg animate-bounce">
-                  <XCircle className="w-4 h-4 sm:w-5 sm:h-5" />
-                </span>
-              )}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => handleTileClick(idx)}
+                disabled={locked}
+                style={{ backgroundColor: tileBg }}
+                className={`w-full h-full rounded-xl transition-all duration-150 active:scale-95 shadow-xs cursor-pointer relative flex items-center justify-center touch-manipulation select-none ${
+                  isWrong ? 'ring-4 ring-red-500 scale-95 bg-red-500/30' : ''
+                } ${isHitTarget ? 'ring-4 ring-lime-500' : ''} ${locked ? 'opacity-70' : 'hover:opacity-95'}`}
+                aria-label={`Color tile ${idx + 1}`}
+              >
+                {isWrong && (
+                  <span className="text-white text-lg sm:text-2xl font-black bg-red-600/95 rounded-full w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center shadow-lg animate-bounce">
+                    <XCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Feedback banner */}
-      <div className="mt-3 min-h-[34px] flex items-center justify-center">
+      <div className="page-fit-band mt-3 min-h-[30px] flex items-center justify-center">
         {stageResult === 'correct' && (
           <div className="text-center text-xs font-bold text-lime-700 dark:text-lime-400 bg-lime-500/10 border border-lime-500/20 py-1.5 px-4 rounded-xl max-w-md mx-auto flex items-center justify-center gap-1.5 animate-pulse">
             <CheckCircle2 className="w-3.5 h-3.5" />
@@ -193,7 +195,7 @@ export const ColorTest: React.FC<ColorTestProps> = ({ stage, onStageComplete, on
       </div>
 
       {/* Score + skip */}
-      <div className="mt-4 sm:mt-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-800 pt-4">
+      <div className="page-fit-band mt-2 pt-2.5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center gap-3">
           <span>• {isTamil ? 'மொத்தம் 16 வண்ண கட்டங்கள்' : '16 color tiles total'}</span>
           <span>• {isTamil ? '1 மாறுபட்ட கட்டம்' : '1 unique shade'}</span>

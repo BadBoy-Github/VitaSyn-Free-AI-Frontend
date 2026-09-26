@@ -263,9 +263,9 @@ export const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fafafa] dark:bg-[#0b0f0b] text-zinc-900 dark:text-zinc-100 transition-colors duration-200">
+    <div className="h-[100dvh] flex flex-col overflow-hidden bg-[#fafafa] dark:bg-[#0b0f0b] text-zinc-900 dark:text-zinc-100 transition-colors duration-200">
       {/* Top Bar */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-zinc-200 dark:border-[#1e2a1e]">
+      <div className="page-fit-band flex items-center justify-between px-4 sm:px-6 py-2.5 border-b border-zinc-200 dark:border-[#1e2a1e]">
         <BrandLogo size="md" />
         <div className="flex items-center gap-2">
           <button
@@ -283,25 +283,25 @@ export const AuthPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Container */}
-      <div className="flex-1 flex items-center justify-center p-4 py-8">
-        <div className="w-full max-w-md">
+      {/* Main Container — the form scrolls internally so the top bar stays put */}
+      <div className="flex-1 min-h-0 flex items-start sm:items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div className="w-full max-w-md my-auto">
           {/* Header Title */}
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-600 dark:text-amber-300 text-xs font-semibold mb-3">
+          <div className="text-center mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-600 dark:text-amber-300 text-[11px] font-semibold mb-2">
               <Sparkles className="w-3.5 h-3.5" />
               <span>{t.freeAiTag}</span>
             </div>
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+            <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-50 leading-tight">
               {mode === 'login' ? t.loginTitle : mode === 'register' ? t.registerTitle : t.forgotTitle}
             </h1>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
+            <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1">
               {mode === 'login' ? t.loginSubtitle : mode === 'register' ? t.registerSubtitle : t.forgotSubtitle}
             </p>
           </div>
 
           {/* Form Card */}
-          <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-6 shadow-sm">
+          <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-5 shadow-sm">
             {/* Status alerts */}
             {error && (
               <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium">

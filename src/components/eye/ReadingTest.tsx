@@ -30,15 +30,17 @@ export const ReadingTest: React.FC<ReadingTestProps> = ({ mode, stageIndex, corr
   const nextModeIndex = EYE_MODE_ORDER.indexOf(mode) + 1;
   const isLastMode = nextModeIndex >= EYE_MODE_ORDER.length;
 
-  // A distinct word per stage keeps the reading task meaningful at every size
+  // A distinct word for every (mode, stage) pair — 3 modes x 5 stages = 15 unique words,
+  // so no word is ever repeated between the left, right and both-eye tests.
+  const wordIndex = EYE_MODE_ORDER.indexOf(mode) * READING_STAGE_COUNT + stageIndex;
   const word = useMemo(() => {
     if (!words || words.length === 0) return '';
-    return words[stageIndex % words.length];
-  }, [words, stageIndex]);
+    return words[wordIndex % words.length];
+  }, [words, wordIndex]);
 
   const testPanel = (
-    <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-4 sm:p-6 rounded-2xl bg-white dark:bg-zinc-900/60 border-2 border-lime-500/30">
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-lime-500/15 border border-lime-500/30 text-lime-700 dark:text-lime-300 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
+    <div className="w-full h-full flex flex-col items-center justify-center gap-3 p-3 sm:p-4 rounded-2xl bg-white dark:bg-zinc-900/60 border-2 border-lime-500/30">
+      <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-lime-500/15 border border-lime-500/30 text-lime-700 dark:text-lime-300 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider">
         <EyeIcon className="w-3 h-3" />
         <span>{modeLabel(t, mode)}</span>
       </div>
@@ -53,7 +55,7 @@ export const ReadingTest: React.FC<ReadingTestProps> = ({ mode, stageIndex, corr
       </div>
 
       {/* Word display — font size shrinks with each stage */}
-      <div className="w-full flex-1 min-h-[110px] sm:min-h-[150px] px-3 py-6 flex items-center justify-center bg-zinc-50 dark:bg-zinc-900/90 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+      <div className="w-full flex-1 min-h-0 px-3 py-4 flex items-center justify-center bg-zinc-50 dark:bg-zinc-900/90 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
         <p
           className={`${stage.sizeClass} font-bold tracking-wide text-zinc-900 dark:text-zinc-50 text-center uppercase break-words leading-tight`}
         >
@@ -87,9 +89,9 @@ export const ReadingTest: React.FC<ReadingTestProps> = ({ mode, stageIndex, corr
   );
 
   return (
-    <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-8 shadow-sm">
+    <div className="h-full w-full flex flex-col bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-5 shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 mb-3 sm:mb-4">
+      <div className="page-fit-band flex items-center justify-between gap-3 mb-2">
         <div className="flex items-center gap-2 min-w-0">
           <BookOpen className="w-4 h-4 text-lime-500 shrink-0" />
           <span className="text-xs font-bold uppercase tracking-wider text-lime-600 dark:text-lime-400 truncate">
@@ -111,55 +113,57 @@ export const ReadingTest: React.FC<ReadingTestProps> = ({ mode, stageIndex, corr
       </div>
 
       {/* Stage progress */}
-      <div className="w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden mb-3 sm:mb-4">
+      <div className="page-fit-band w-full bg-zinc-200 dark:bg-zinc-800 h-2 rounded-full overflow-hidden mb-2.5">
         <div
           className="bg-gradient-to-r from-lime-500 to-amber-500 h-full transition-all duration-300 rounded-full"
           style={{ width: `${((stageIndex + 1) / READING_STAGE_COUNT) * 100}%` }}
         />
       </div>
 
-      <div className="text-center mb-4">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-400/10 border border-amber-400/20 text-[11px] sm:text-xs text-amber-700 dark:text-amber-300 font-medium">
-          <Volume2 className="w-3.5 h-3.5 shrink-0" />
-          <span>{t.distanceTip}</span>
+      {/* Test area fills the remaining height */}
+      <div className="flex-1 min-h-0 flex flex-col gap-3">
+        <div className="text-center">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-amber-400/10 border border-amber-400/20 text-[11px] sm:text-xs text-amber-700 dark:text-amber-300 font-medium">
+            <Volume2 className="w-3.5 h-3.5 shrink-0" />
+            <span>{t.distanceTip}</span>
+          </div>
         </div>
+
+        {mode === 'both' ? (
+          <div className="flex-1 min-h-0 max-w-xl w-full mx-auto animate-slide-in-right">{testPanel}</div>
+        ) : (
+          <div className="flex-1 min-h-0 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            {mode === 'left' ? (
+              <>
+                <div className="min-h-0 animate-slide-in-right">{testPanel}</div>
+                <div className="min-h-0 animate-slide-in-left">
+                  <ClosedEyePanel mode={mode} />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="min-h-0 animate-slide-in-left">
+                  <ClosedEyePanel mode={mode} />
+                </div>
+                <div className="min-h-0 animate-slide-in-right">{testPanel}</div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Cover-eye guidance */}
+        {mode !== 'both' && (
+          <p className="page-fit-band text-[11px] sm:text-xs text-center text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            {t.readingCoverEyeTip}
+          </p>
+        )}
+
+        {isLastMode && stageIndex === READING_STAGE_COUNT - 1 && (
+          <p className="page-fit-band text-center text-[11px] font-bold text-lime-600 dark:text-lime-400">
+            {t.readingComplete} {t.next} → {isTamil ? 'கேள்விகள்' : 'Questions'}
+          </p>
+        )}
       </div>
-
-      {/* Single-eye tests: closed-eye animation on the opposite side */}
-      {mode === 'both' ? (
-        <div className="max-w-xl mx-auto animate-slide-in-right">{testPanel}</div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          {mode === 'left' ? (
-            <>
-              <div className="order-1 animate-slide-in-right">{testPanel}</div>
-              <div className="order-2 animate-slide-in-left">
-                <ClosedEyePanel mode={mode} />
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="order-1 animate-slide-in-left">
-                <ClosedEyePanel mode={mode} />
-              </div>
-              <div className="order-2 animate-slide-in-right">{testPanel}</div>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* Cover-eye guidance */}
-      {mode !== 'both' && (
-        <p className="mt-3 text-[11px] sm:text-xs text-center text-zinc-600 dark:text-zinc-400 leading-relaxed">
-          {t.readingCoverEyeTip}
-        </p>
-      )}
-
-      {isLastMode && stageIndex === READING_STAGE_COUNT - 1 && (
-        <p className="mt-2 text-center text-[11px] font-bold text-lime-600 dark:text-lime-400">
-          {t.readingComplete} {t.next} → {isTamil ? 'கேள்விகள்' : 'Questions'}
-        </p>
-      )}
     </div>
   );
 };

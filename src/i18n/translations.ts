@@ -409,7 +409,7 @@ export const translations: Record<Language, Translations> = {
     sentVerySmall: 'VitaSyn Free AI promotes preventative wellness through accessible intelligence.',
 
     reportTitle: 'Assessment & Consultation Report',
-    overallScore: 'Overall Wellness Score',
+    overallScore: 'Overall Wellness Index',
     conditionBadge: 'Primary Evaluation',
     keyFindings: 'Clinical Insights & Indicators',
     recommendedDos: 'Daily Best Practices (Do)',
@@ -424,7 +424,7 @@ export const translations: Record<Language, Translations> = {
     historyTitle: 'Saved Assessment Records',
     noHistory: 'No assessments recorded yet. Take a Hair or Eye test to view your records here!',
     historyDbSubtitle: 'Saved assessment records from your health screenings',
-    scoreLabel: 'Score',
+    scoreLabel: 'Index',
     viewLabel: 'View',
     allFilter: 'All',
 
@@ -465,7 +465,7 @@ export const translations: Record<Language, Translations> = {
     bothEyesLabel: 'Both Eyes',
     readingStage: 'Stage',
     readingStageOf: 'of',
-    readingProgressLabel: 'Reading Score',
+    readingProgressLabel: 'Reading Index',
     readingCanRead: 'Yes, I can read it',
     readingCannotRead: 'No, it\'s blurry',
     readingComplete: 'Test Complete!',
@@ -482,6 +482,11 @@ export const translations: Record<Language, Translations> = {
       'DISTANT',
       'PREVENT',
       'PROTECTED',
+      'GLARE',
+      'SHARPEN',
+      'NEAR',
+      'LIGHTER',
+      'CONTRAST',
     ],
 
     // Questionnaire - New Questions
@@ -740,6 +745,11 @@ export const translations: Record<Language, Translations> = {
       'தொலைவில்',
       'தடுக்க',
       'காப்பு',
+      'விரல்',
+      'கூர்மை',
+      'அருகில்',
+      'மெல்லிய',
+      'வேறுபாடு',
     ],
 
     // Questionnaire - New Questions

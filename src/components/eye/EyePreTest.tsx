@@ -49,13 +49,13 @@ export const EyePreTest: React.FC<EyePreTestProps> = ({ onStartTest }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-5 sm:p-8 shadow-sm">
+    <div className="h-full w-full flex flex-col bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-6 shadow-sm">
       {/* Intro hero */}
-      <div className="text-center">
-        <h2 className="text-lg sm:text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+      <div className="page-fit-band text-center">
+        <h2 className="text-base sm:text-xl font-bold text-zinc-900 dark:text-zinc-50">
           {isTamil ? 'கண் பரிசோதனைக்கு முன்பு' : 'Before You Begin'}
         </h2>
-        <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 mt-1.5 max-w-lg mx-auto leading-relaxed">
+        <p className="text-[11px] sm:text-xs text-zinc-700 dark:text-zinc-300 mt-1 max-w-lg mx-auto leading-relaxed">
           {isTamil
             ? 'இந்த சோதனையில் மூன்று பகுதிகள் உள்ளன. முழு விவரங்களைப் படித்து, பின்னர் தொடங்கவும்.'
             : 'This checkup has three parts. Review the overview below, then start when you are ready.'}
@@ -63,14 +63,14 @@ export const EyePreTest: React.FC<EyePreTestProps> = ({ onStartTest }) => {
       </div>
 
       {/* Steps preview */}
-      <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="flex-1 min-h-0 mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 content-center">
         {steps.map(({ icon: Icon, color, title, desc }, idx) => (
           <div
             key={title}
-            className={`p-4 rounded-2xl border ${colorMap[color].box} flex flex-col items-start`}
+            className={`p-3.5 sm:p-4 rounded-2xl border ${colorMap[color].box} flex flex-col items-start justify-center overflow-hidden`}
           >
-            <div className="flex items-center gap-2 w-full mb-2">
-              <Icon className={`w-5 h-5 shrink-0 ${colorMap[color].icon}`} />
+            <div className="flex items-center gap-2 w-full mb-1.5">
+              <Icon className={`w-4.5 h-4.5 shrink-0 ${colorMap[color].icon}`} />
               <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                 {isTamil ? `பகுதி ${idx + 1}` : `Part ${idx + 1}`}
               </span>
@@ -84,7 +84,7 @@ export const EyePreTest: React.FC<EyePreTestProps> = ({ onStartTest }) => {
       </div>
 
       {/* Key facts */}
-      <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] sm:text-xs">
+      <div className="page-fit-band mt-4 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] sm:text-xs">
         <div className="flex items-center gap-2 p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
           <Clock className="w-4 h-4 text-amber-500 shrink-0" />
           <span>{isTamil ? 'சுமார் 4–5 நிமிடங்கள்' : 'About 4–5 minutes'}</span>
@@ -100,7 +100,7 @@ export const EyePreTest: React.FC<EyePreTestProps> = ({ onStartTest }) => {
       </div>
 
       {/* Start CTA */}
-      <div className="mt-6 pt-5 border-t border-zinc-200 dark:border-zinc-800 flex justify-center">
+      <div className="page-fit-band mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex flex-col items-center">
         <button
           type="button"
           onClick={onStartTest}
@@ -109,13 +109,13 @@ export const EyePreTest: React.FC<EyePreTestProps> = ({ onStartTest }) => {
           <Play className="w-4.5 h-4.5" />
           <span>{t.preTestStartBtn}</span>
         </button>
-      </div>
 
-      <p className="mt-3 text-center text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-500">
-        {isTamil
-          ? 'தொடங்கும் முன் கட்டாயமாக வழிமுறைகள் சொல்லப்படும்.'
-          : 'Instructions will be shown before the test starts.'}
-      </p>
+        <p className="mt-2 text-center text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-500">
+          {isTamil
+            ? 'தொடங்கும் முன் கட்டாயமாக வழிமுறைகள் சொல்லப்படும்.'
+            : 'Instructions will be shown before the test starts.'}
+        </p>
+      </div>
     </div>
   );
 };

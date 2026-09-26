@@ -66,6 +66,19 @@ export const EyeAssessment: React.FC = () => {
 
   const displayReport = useMemo(() => localizeReport(report, language), [report, language]);
 
+  // Consultation escalation returned by the backend (none | recommended | mandatory)
+  const consultLevel: 'none' | 'recommended' | 'mandatory' = displayReport?.consultation?.level ?? 'none';
+  const consultMessage: string = displayReport?.consultation?.message ?? '';
+
+  // Every raw input echoed back by the backend, so the result page can show
+  // exactly what was measured rather than only the derived narrative.
+  const metrics = displayReport?.eyeMetrics;
+  const screenTimeLabel: Record<string, string> = {
+    below1: t.screenTimeBelow1hr,
+    '1to3': t.screenTime1to3hr,
+    above3: t.screenTimeAbove3hr,
+  };
+
   const handleColorStageComplete = (correct: boolean) => {
     if (correct) {
       setColorScore((prev) => prev + 10);
@@ -215,87 +228,89 @@ export const EyeAssessment: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-4 px-2 sm:px-4">
-      {/* Header Banner */}
-      <div className="mb-6 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-lime-500/15 border border-lime-500/30 text-lime-600 dark:text-lime-300 text-xs font-semibold mb-2">
-          <Eye className="w-3.5 h-3.5" />
+    <div className="page-fit mx-auto w-full max-w-4xl">
+      {/* Compact Header Banner */}
+      <div className="page-fit-band mb-2 sm:mb-3 text-center">
+        <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-lime-500/15 border border-lime-500/30 text-lime-600 dark:text-lime-300 text-[11px] font-semibold mb-1">
+          <Eye className="w-3 h-3" />
           <span>{t.eyeBanner}</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-lg sm:text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
           {t.eyeTitle}
         </h1>
-        <p className="text-sm text-zinc-700 dark:text-zinc-300 mt-1 max-w-xl mx-auto">
+        <p className="text-[11px] sm:text-xs text-zinc-700 dark:text-zinc-300 leading-snug">
           {t.eyeSubtitle}
         </p>
       </div>
 
       {errorMsg && (
-        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
+        <div className="page-fit-band mb-2 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
-      {/* STEP 0: SAMPLE / PRE-TEST PAGE */}
-      {phase === 'pretest' && <EyePreTest onStartTest={() => setIsInstructionsOpen(true)} />}
+      {/* Active phase fills the remaining height */}
+      <div className="page-fit-grow min-h-0 flex">
+        {/* STEP 0: SAMPLE / PRE-TEST PAGE */}
+        {phase === 'pretest' && <EyePreTest onStartTest={() => setIsInstructionsOpen(true)} />}
 
-      {/* STEP 1: COLOUR TEST (10 stages x 10s) */}
-      {phase === 'color' && (
-        <ColorTest
-          stage={colorStage}
-          onStageComplete={handleColorStageComplete}
-          onSkipAll={() => setPhase('readingSelect')}
-        />
-      )}
+        {/* STEP 1: COLOUR TEST (10 stages x 10s) */}
+        {phase === 'color' && (
+          <ColorTest
+            stage={colorStage}
+            onStageComplete={handleColorStageComplete}
+            onSkipAll={() => setPhase('readingSelect')}
+          />
+        )}
 
-      {/* STEP 2A: READING TEST INTRO (showcase, runs left -> right -> both) */}
-      {phase === 'readingSelect' && <EyeModeSelect scores={eyeScores} onStart={startReadingSequence} />}
+        {/* STEP 2A: READING TEST INTRO (showcase, runs left -> right -> both) */}
+        {phase === 'readingSelect' && <EyeModeSelect scores={eyeScores} onStart={startReadingSequence} />}
 
-      {/* STEP 2B: READING TEST FOR THE ACTIVE EYE MODE */}
-      {phase === 'reading' && (
-        <ReadingTest
-          mode={activeMode}
-          stageIndex={readingStage}
-          correctCount={eyeScores[activeMode]}
-          onAnswer={handleReadingAnswer}
-          onQuit={() => {
-            const nextModeIndex = EYE_MODE_ORDER.indexOf(activeMode) + 1;
-            if (nextModeIndex < EYE_MODE_ORDER.length) {
-              setActiveMode(EYE_MODE_ORDER[nextModeIndex]);
+        {/* STEP 2B: READING TEST FOR THE ACTIVE EYE MODE */}
+        {phase === 'reading' && (
+          <ReadingTest
+            mode={activeMode}
+            stageIndex={readingStage}
+            correctCount={eyeScores[activeMode]}
+            onAnswer={handleReadingAnswer}
+            onQuit={() => {
+              const nextModeIndex = EYE_MODE_ORDER.indexOf(activeMode) + 1;
+              if (nextModeIndex < EYE_MODE_ORDER.length) {
+                setActiveMode(EYE_MODE_ORDER[nextModeIndex]);
+                setReadingStage(0);
+              } else {
+                setPhase('questions');
+              }
+            }}
+          />
+        )}
+
+        {/* STEP 3: SYMPTOM QUESTIONNAIRE */}
+        {phase === 'questions' && (
+          <EyeSymptomForm
+            screenTime={screenTime}
+            onScreenTimeChange={setScreenTime}
+            answers={answers}
+            onAnswerChange={handleAnswerChange}
+            colorPassed={colorStagesPassed}
+            leftScore={eyeScores.left}
+            rightScore={eyeScores.right}
+            bothScore={eyeScores.both}
+            isSubmitting={isAnalyzing}
+            onSubmit={submitEyeAssessment}
+            onBack={() => {
+              setActiveMode('both');
               setReadingStage(0);
-            } else {
-              setPhase('questions');
-            }
-          }}
-        />
-      )}
+              setPhase('reading');
+            }}
+          />
+        )}
 
-      {/* STEP 3: SYMPTOM QUESTIONNAIRE */}
-      {phase === 'questions' && (
-        <EyeSymptomForm
-          screenTime={screenTime}
-          onScreenTimeChange={setScreenTime}
-          answers={answers}
-          onAnswerChange={handleAnswerChange}
-          colorPassed={colorStagesPassed}
-          leftScore={eyeScores.left}
-          rightScore={eyeScores.right}
-          bothScore={eyeScores.both}
-          isSubmitting={isAnalyzing}
-          onSubmit={submitEyeAssessment}
-          onBack={() => {
-            setActiveMode('both');
-            setReadingStage(0);
-            setPhase('reading');
-          }}
-        />
-      )}
-
-      {/* STEP 4: AI REPORT */}
-      {phase === 'report' && displayReport && (
-        <div className="space-y-6">
-          <div className="bg-white dark:bg-[#121812] border border-lime-500/40 dark:border-amber-400/30 rounded-2xl p-4 sm:p-8 shadow-lg relative overflow-hidden">
+        {/* STEP 4: AI REPORT — a long document, so this region scrolls */}
+        {phase === 'report' && displayReport && (
+          <div className="page-fit-scroll w-full">
+            <div className="bg-white dark:bg-[#121812] border border-lime-500/40 dark:border-amber-400/30 rounded-2xl p-4 sm:p-6 shadow-lg relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-lime-500/10 to-amber-400/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 
             {/* Top Bar */}
@@ -316,16 +331,16 @@ export const EyeAssessment: React.FC = () => {
                     {t.overallScore}
                   </div>
                   <div className="text-2xl font-black text-lime-600 dark:text-lime-400">
-                    {displayReport.overallScore}
+                    {displayReport.overallScore ?? 0}
                     <span className="text-xs text-zinc-600 dark:text-zinc-400 font-normal">/100</span>
                   </div>
                 </div>
                 <div className="w-12 h-12 rounded-full border-4 border-lime-500/40 border-t-amber-400 flex items-center justify-center font-bold text-xs text-zinc-800 dark:text-zinc-200">
-                  {displayReport.overallScore >= 80
+                  {(displayReport.overallScore ?? 0) >= 80
                     ? isTamil
                       ? 'சிறந்தது'
                       : 'Optimal'
-                    : displayReport.overallScore >= 60
+                    : (displayReport.overallScore ?? 0) >= 60
                     ? isTamil
                       ? 'சீரானது'
                       : 'Standard'
@@ -335,6 +350,58 @@ export const EyeAssessment: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Consultation escalation banner — driven by the overall index */}
+            {consultLevel !== 'none' && (
+              <div
+                role="alert"
+                className={`mt-4 p-4 rounded-2xl border-2 flex items-start gap-3 ${
+                  consultLevel === 'mandatory'
+                    ? 'bg-red-500/10 border-red-500/60'
+                    : 'bg-amber-500/10 border-amber-500/50'
+                }`}
+              >
+                <div
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                    consultLevel === 'mandatory'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-amber-500 text-zinc-950'
+                  }`}
+                >
+                  {consultLevel === 'mandatory' ? (
+                    <AlertTriangle className="w-5 h-5" />
+                  ) : (
+                    <HelpCircle className="w-5 h-5" />
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <div
+                    className={`text-xs font-black uppercase tracking-wider mb-1 ${
+                      consultLevel === 'mandatory'
+                        ? 'text-red-600 dark:text-red-400'
+                        : 'text-amber-700 dark:text-amber-300'
+                    }`}
+                  >
+                    {consultLevel === 'mandatory'
+                      ? isTamil
+                        ? 'கட்டாயமாக மருத்துவர் ஆலோசனை அவசியம்'
+                        : 'Mandatory Doctor Consultation'
+                      : isTamil
+                      ? 'மருத்துவர் ஆலோசனை பரிந்துரைக்கப்படுகிறது'
+                      : 'Doctor Consultation Advised'}
+                  </div>
+                  <p
+                    className={`text-xs sm:text-[13px] leading-relaxed ${
+                      consultLevel === 'mandatory'
+                        ? 'text-red-700 dark:text-red-300'
+                        : 'text-amber-800 dark:text-amber-200'
+                    }`}
+                  >
+                    {consultMessage}
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Breakdown Score Cards */}
             <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -357,6 +424,90 @@ export const EyeAssessment: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* Your eye test results — per-eye breakdown from the echoed metrics */}
+            {metrics && (
+              <div className="mt-3 p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800">
+                <div className="text-[11px] uppercase font-bold text-zinc-600 dark:text-zinc-400 mb-2.5">
+                  {isTamil ? 'உங்கள் கண் பரிசோதனை முடிவுகள்' : 'Your Eye Test Results'}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2.5 text-xs">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-zinc-600 dark:text-zinc-400">
+                      {t.colorDiscriminationLabel}
+                    </span>
+                    <span className="font-bold text-amber-600 dark:text-amber-400">
+                      {metrics.colorStagesPassed}/{metrics.colorStagesTotal} · {metrics.colorPoints}/
+                      {metrics.colorPointsTotal} {isTamil ? 'புள்ளிகள்' : 'pts'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-zinc-600 dark:text-zinc-400">{t.leftEyeLabel}</span>
+                    <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                      {metrics.leftEyeScore ?? 0}/{metrics.readingStagesPerEye}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-zinc-600 dark:text-zinc-400">{t.rightEyeLabel}</span>
+                    <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                      {metrics.rightEyeScore ?? 0}/{metrics.readingStagesPerEye}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-zinc-600 dark:text-zinc-400">{t.bothEyesLabel}</span>
+                    <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                      {metrics.bothEyesScore ?? 0}/{metrics.readingStagesPerEye}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Your questionnaire answers — every input the user gave */}
+            {metrics && (
+              <div className="mt-3 p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800">
+                <div className="flex items-center justify-between mb-2.5">
+                  <div className="text-[11px] uppercase font-bold text-zinc-600 dark:text-zinc-400">
+                    {isTamil ? 'உங்கள் பதில்கள்' : 'Your Answers'}
+                  </div>
+                  <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">
+                    {metrics.symptomCount}/5 {isTamil ? 'அறிகுறிகள்' : 'symptoms'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2 text-xs">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-zinc-600 dark:text-zinc-400 truncate">{t.screenTimePrompt}</span>
+                    <span className="font-bold text-zinc-900 dark:text-zinc-100 shrink-0">
+                      {metrics.screenTime ? screenTimeLabel[metrics.screenTime] : '—'}
+                    </span>
+                  </div>
+
+                  {(
+                    [
+                      ['usingPhoneAtNight', t.phoneAtNightPrompt],
+                      ['eyeIrritationDuringTest', t.eyeIrritationPrompt],
+                      ['wateryEyesDuringTest', t.wateryEyesPrompt],
+                      ['headacheAfterScreenUse', t.headachePrompt],
+                      ['blurryVisionAfterProlongedUse', t.blurryVisionPrompt],
+                    ] as const
+                  ).map(([key, label]) => {
+                    const val = metrics[key];
+                    return (
+                      <div key={key} className="flex items-center justify-between gap-2">
+                        <span className="text-zinc-600 dark:text-zinc-400 truncate">{label}</span>
+                        <span
+                          className={`font-bold shrink-0 ${val ? 'text-red-600 dark:text-red-400' : 'text-lime-600 dark:text-lime-400'}`}
+                        >
+                          {val ? t.yes : t.no}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Clinical Consultation */}
             <div className="mt-5 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
@@ -472,10 +623,10 @@ export const EyeAssessment: React.FC = () => {
                 <span>{t.printReport}</span>
               </button>
             </div>
+            </div>
           </div>
-        </div>
-      )}
-
+        )}
+      </div>
       {/* PRE-INSTRUCTIONS MODAL — opened from the pre-test page, OK opens colour test */}
       <PreInstructionsModal
         isOpen={isInstructionsOpen}

@@ -50,7 +50,7 @@ export const PreInstructionsModal: React.FC<PreInstructionsModalProps> = ({ isOp
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg max-h-[92dvh] overflow-y-auto rounded-2xl bg-white dark:bg-[#121812] border border-amber-400/40 dark:border-amber-400/25 shadow-2xl shadow-amber-500/10 animate-[scaleIn_0.22s_ease-out]"
+        className="w-full max-w-3xl max-h-[92dvh] overflow-y-auto rounded-2xl bg-white dark:bg-[#121812] border border-amber-400/40 dark:border-amber-400/25 shadow-2xl shadow-amber-500/10 animate-[scaleIn_0.22s_ease-out]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -97,8 +97,8 @@ export const PreInstructionsModal: React.FC<PreInstructionsModalProps> = ({ isOp
             ))}
           </div>
 
-          {/* Full instruction list */}
-          <ul className="space-y-2">
+          {/* Full instruction list — two columns so all 8 points stay visible at once */}
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {t.preTestInstructions.map((instruction, idx) => (
               <li
                 key={instruction}

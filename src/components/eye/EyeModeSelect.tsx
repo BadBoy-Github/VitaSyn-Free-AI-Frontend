@@ -64,9 +64,9 @@ export const EyeModeSelect: React.FC<EyeModeSelectProps> = ({ scores, onStart })
   const allDone = cards.every(({ mode }) => scores[mode] > 0);
 
   return (
-    <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-5 sm:p-8 shadow-sm">
-      <div className="text-center mb-5 sm:mb-6">
-        <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50">
+    <div className="h-full w-full flex flex-col bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-6 shadow-sm">
+      <div className="page-fit-band text-center mb-4">
+        <h2 className="text-base sm:text-xl font-bold text-zinc-900 dark:text-zinc-50">
           {isTamil ? 'வாசிப்பு பரிசோதனை அறிமுகம்' : 'Reading Test Intro'}
         </h2>
         <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 mt-1.5 max-w-lg mx-auto leading-relaxed">
@@ -77,7 +77,7 @@ export const EyeModeSelect: React.FC<EyeModeSelectProps> = ({ scores, onStart })
       </div>
 
       {/* Non-interactive showcase cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="flex-1 min-h-0 grid grid-cols-1 sm:grid-cols-3 gap-3 content-center">
         {cards.map(({ mode, step, label, desc, leftOpen, rightOpen, accent, iconTint }) => {
           const Icon = modeIcon(mode);
           const done = scores[mode] > 0;
@@ -86,7 +86,7 @@ export const EyeModeSelect: React.FC<EyeModeSelectProps> = ({ scores, onStart })
             <div
               key={mode}
               aria-disabled="true"
-              className={`relative p-4 sm:p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border-2 ${accent} flex flex-col items-center text-center gap-2 select-none`}
+              className={`relative p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border-2 ${accent} flex flex-col items-center justify-center text-center gap-2 select-none overflow-hidden`}
             >
               {/* Step number */}
               <span className="absolute top-2.5 left-3 text-[10px] font-black uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
@@ -95,12 +95,14 @@ export const EyeModeSelect: React.FC<EyeModeSelectProps> = ({ scores, onStart })
 
               <EyeGlyphRow leftOpen={leftOpen} rightOpen={rightOpen} size={52} />
 
-              
+              <div className={`w-9 h-9 rounded-xl ${iconTint} flex items-center justify-center`}>
+                <Icon className="w-4 h-4" />
+              </div>
 
               <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-50">{label}</h3>
               <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-snug">{desc}</p>
 
-              <div className="mt-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                 <span>
                   {READING_STAGE_COUNT} {isTamil ? 'நிலைகள்' : 'stages'}
                 </span>
@@ -112,7 +114,7 @@ export const EyeModeSelect: React.FC<EyeModeSelectProps> = ({ scores, onStart })
       </div>
 
       {/* Order reminder */}
-      <div className="mt-4 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-semibold text-zinc-600 dark:text-zinc-400 flex-wrap">
+      <div className="page-fit-band mt-3 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-semibold text-zinc-600 dark:text-zinc-400 flex-wrap">
         <span className="text-lime-600 dark:text-lime-400">{t.leftEyeLabel}</span>
         <ArrowRight className="w-3 h-3" />
         <span className="text-amber-600 dark:text-amber-400">{t.rightEyeLabel}</span>
@@ -121,7 +123,7 @@ export const EyeModeSelect: React.FC<EyeModeSelectProps> = ({ scores, onStart })
       </div>
 
       {/* Start CTA */}
-      <div className="mt-5 pt-5 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="page-fit-band mt-3 pt-4 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3">
         <p className="text-[11px] sm:text-xs text-zinc-600 dark:text-zinc-400">
           {isTamil
             ? 'ஒரு கை தூரத்தில் அமர்ந்து, ஒவ்வொரு கண்ணையும் தனித்தனியாகப் பரிசோதியுங்கள்.'

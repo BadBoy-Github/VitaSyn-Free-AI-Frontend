@@ -4,6 +4,30 @@
  * fully translated content even for pre-existing or cached reports.
  */
 
+export interface EyeMetrics {
+  colorStagesPassed?: number;
+  colorStagesTotal?: number;
+  colorPoints?: number;
+  colorPointsTotal?: number;
+  leftEyeScore?: number | null;
+  rightEyeScore?: number | null;
+  bothEyesScore?: number | null;
+  readingStagesPerEye?: number;
+  readingStagesTotal?: number;
+  screenTime?: 'below1' | '1to3' | 'above3' | null;
+  usingPhoneAtNight?: boolean;
+  eyeIrritationDuringTest?: boolean;
+  wateryEyesDuringTest?: boolean;
+  headacheAfterScreenUse?: boolean;
+  blurryVisionAfterProlongedUse?: boolean;
+  symptomCount?: number;
+}
+
+export interface Consultation {
+  level: 'none' | 'recommended' | 'mandatory';
+  message: string;
+}
+
 export interface DiagnosticReport {
   title?: string;
   condition?: string;
@@ -16,6 +40,16 @@ export interface DiagnosticReport {
   recommendations?: string[];
   lifestyleGuidance?: string;
   disclaimer?: string;
+  overallScore?: number;
+  colorScore?: number;
+  colorStagesPassed?: number;
+  acuityScore?: number;
+  maxAcuity?: number;
+  leftEyeScore?: number | null;
+  rightEyeScore?: number | null;
+  bothEyesScore?: number | null;
+  eyeMetrics?: EyeMetrics;
+  consultation?: Consultation;
   [key: string]: any;
 }
 
@@ -98,9 +132,27 @@ const translationMap: Record<string, string> = {
   // Eye Recommendations
   'Follow the 20-20-20 rule: Every 20 minutes, gaze at something 20 feet away for 20 seconds.': '20-20-20 விதியைப் பின்பற்றவும்: ஒவ்வொரு 20 நிமிடங்களுக்கும், 20 அடி தொலைவில் உள்ள பொருளை 20 வினாடிகள் பார்க்கவும்.',
   'Use preservative-free lubricating artificial tear drops as recommended by an optometrist.': 'கண் மருத்துவர் பரிந்துரைத்தபடி பாதுகாப்பு மருந்துகள் அற்ற மாய்ஸ்ச்சரைசிங் கண் சொட்டு மருந்தைப் பயன்படுத்தவும்.',
-  'Ensure optimal ambient lighting when reading books or working on laptops.': 'புத்தகங்கள் வாசிக்கும் போதும் கணினியில் வேலை செய்யும் போதும் அறையில் போதிய வெளிச்சம் இருப்பதை உறுதிசெய்யவும்.',
-  'Wear anti-reflective (AR) and blue-cut coated corrective spectacles during screen work.': 'திரை வேலைகளின் போது ஆன்டி-ரிஃப்ளெக்டிவ் (AR) மற்றும் நீல ஒளி வடிகட்டும் (Blue-cut) கண்ணாடிகளை அணியவும்.',
+  'Ensure optimal ambient lighting when reading books or working on laptops.': 'புத்தகங்களை வாசிக்கும் போதும் கணினியில் வேலை செய்யும் போதும் அறையில் போதிய வெளிச்சம் இருப்பதை உறுதிசெய்யவும்.',
+  'Wear anti-reflective (AR) and blue-cut coated corrective spectacles during screen work.': 'திரை வேலைகளின் போது ஆண்டி-ரிஃப்ளெக்டிவ் (AR) மற்றும் நீல ஒளி வடிகட்டும் (Blue-cut) கண்ணாடிகளை அணியவும்.',
   'Take regular 5-minute visual breaks and include vitamin A & lutein-rich foods (carrots, spinach).': 'ஒவ்வொரு மணி நேரமும் 5 நிமிட ஓய்வு எடுக்கவும், வைட்டமின் A மற்றும் லூட்டீன் நிறைந்த உணவுகளை (கேரட், கீரை) உணவில் சேர்க்கவும்.',
+  'Follow the 20-20-20 rule strictly and break screen use into sessions of under 2 hours.': '20-20-20 விதியைக் கடைவாகப் பின்பற்றவும் மற்றும் திரை பயன்பாட்டை 2 மணி இடங்களில் இடைவெளிக்கு உட்படுத்தவும்.',
+  'If these symptoms persist, schedule a comprehensive dilated eye examination with an optometrist.': 'இந்த அறிகுறிகள் தொடர்ந்தால், ஒரு கண் மருத்துவரிடம் முழுமையான மெல்லிய கண் பரிசோதனை மேற்கொள்ளுமாறு அறிவுறுத்தப்படுகிறது.',
+
+  // Eye consultation escalation
+  'Your overall eye wellness index is low. It is mandatory to consult an appropriate eye doctor (Optometrist / Ophthalmologist) as soon as possible.':
+    'உங்கள் ஒட்டுமொத்த கண் நலக் குறியீடு குறைவாக உள்ளது. உங்கள் கண் நலத்திற்கு உரிய மருத்துவரை (Optometrist / Ophthalmologist) கட்டாயமாகச் சந்திப்பது அவசியம்.',
+  'Your overall eye wellness index is in the moderate range. We recommend consulting an eye doctor for a routine check-up.':
+    'உங்கள் ஒட்டுமொத்த கண் நலக் குறியீடு சீரான நிலையில் உள்ளது. விதிவிலக்குக் கண் பரிசோதனைக்காக ஒரு கண் மருத்துவரைச் சந்திப்பது நல்லது.',
+  'Your overall eye wellness index is in a healthy range. Keep maintaining your healthy screen habits.':
+    'உங்கள் ஒட்டுமொத்த கண் நலக் குறியீடு சிறப்பாக உள்ளது. தொடர்ந்து ஆரோக்கியமான பழக்கங்களைப் பேணுங்கள்.',
+  'This is mandatory: your overall eye wellness index is at or below 30. Please consult an optometrist or ophthalmologist without delay.':
+    'இது கட்டாயமாகும்: உங்கள் ஒட்டுமொத்த கண் நலக் குறியீடு 30-ஐ விடக் குறைவாக உள்ளது. தயவுசெய்து கண் மருத்துவரை அணுகவும்.',
+  'Your overall eye wellness index is at or below 60. We advise consulting an eye doctor for a detailed vision check.':
+    'உங்கள் ஒட்டுமொத்த கண் நலக் குறியீடு 60-ஐ விடக் குறைவாக உள்ளது. ஒரு கண் மருத்துவரைச் சந்தித்து விதிவிலக்குப் பரிசோதனை செய்யுமாறு பரிந்துரைக்கிறோம்.',
+  'Do not self-start medicated eye drops, steroid preparations, or contact lenses without advice from an eye doctor.':
+    'மருத்துவர் ஆலோசனையின்றி சொஞ்சுகள், கண் மருந்துகள் அல்லது விழித்திரை மாதிரிகளை தானாகப் பயன்படுத்துவதைத் தவிர்க்கவும்.',
+  'Avoid screen use in bed and switch off all displays at least one hour before sleep.':
+    'படுக்கையில் திரை பயன்பாட்டைத் தவிர்த்து, தூக்கத்திற்கு முன் குறைந்தது ஒரு மணி நேரம் எல்லா திரைகளையும் அணைக்கவும்.',
 
   // Titles & Lifestyles
   'VitaSyn Scalp & Hair AI Health Report': 'VitaSyn முடி & உச்சந்தலை AI பரிசோதனை அறிக்கை',
@@ -120,21 +172,94 @@ function translateText(text: string, lang: 'en' | 'ta'): string {
     return translationMap[text];
   }
 
-  // Check dynamic Eye Findings like:
-  // "Color differentiation score: X/10 stages completed (STATUS)."
-  const colorMatch = text.match(/Color differentiation score:\s*(\d+)\/10 stages completed\s*\(([^)]+)\)/i);
+  // Check dynamic Eye Findings. Note these are regenerated by the backend, so the
+  // patterns must track the current wording ("index", 15 reading stages).
+  // "Color differentiation index: X/10 stages completed (STATUS)."
+  const colorMatch = text.match(/Color differentiation index:\s*(\d+)\/10 stages completed\s*\(([^)]+)\)/i);
   if (colorMatch) {
-    const score = colorMatch[1];
+    const passed = colorMatch[1];
     const status = translationMap[colorMatch[2].trim()] || colorMatch[2];
-    return `வண்ண வேறுபாடு கண்டறிதல் மதிப்பீடு: 10 நிலைகளில் ${score} நிலைகள் நிறைவு செய்யப்பட்டன (${status}).`;
+    return `வண்ண வேறுபாடு கண்டறிதல் குறியீடு: 10 நிலைகளில் ${passed} நிலைகள் நிறைவு செய்யப்பட்டன (${status}).`;
   }
 
-  // "Reading acuity score: X/5 font sizes clearly recognized (GRADE)."
-  const acuityMatch = text.match(/Reading acuity score:\s*(\d+)\/5 font sizes clearly recognized\s*\(([^)]+)\)/i);
+  // "Reading acuity index: X/15 word-size stages read clearly across 3 eye tests — ... (GRADE)."
+  const acuityMatch = text.match(
+    /Reading acuity index:\s*(\d+)\/15 word-size stages read clearly across 3 eye tests[^)]*\(([^)]+)\)/i
+  );
   if (acuityMatch) {
-    const score = acuityMatch[1];
+    const read = acuityMatch[1];
     const grade = translationMap[acuityMatch[2].trim()] || acuityMatch[2];
-    return `வாசிப்பு பார்வைத் திறன் மதிப்பீடு: 5 எழுத்து அளவுகளில் ${score} அளவுகள் தெளிவாக அடையாளம் காணப்பட்டன (${grade}).`;
+    return `வாசிப்பு பார்வைத் திறன் குறியீடு: 3 கண் பரிசோதனைகளில் (இடது, வலது, இரு கண்களும்) 15 சொல் அளவு நிலைகளில் ${read} நிலைகள் தெளிவாக வாசிக்கப்பட்டன (${grade}).`;
+  }
+
+  // "Eye comparison: left X/5, right Y/5, both Z/5."
+  const eyeCmpMatch = text.match(/Eye comparison:\s*left\s+(\d+)\/5,\s*right\s+(\d+)\/5(?:,\s*both\s+(\d+)\/5)?/i);
+  if (eyeCmpMatch) {
+    const [, l, r, b] = eyeCmpMatch;
+    return `கண் ஒப்பீடு: இடது கண் ${l}/5, வலது கண் ${r}/5${b ? `, இரு கண்களும் ${b}/5` : ''}.`;
+  }
+
+  // "Overall eye wellness index: X/100. <consultation message>"
+  const overallMatch = text.match(/Overall eye wellness index:\s*(\d+)\/100\.\s*([\s\S]+)$/i);
+  if (overallMatch) {
+    const idx = overallMatch[1];
+    const rest = overallMatch[2].trim();
+    let localized: string;
+    if (rest.includes('mandatory') || rest.includes('is low')) {
+      localized =
+        'உங்கள் ஒட்டுமொத்த கண் நலக் குறியீடு குறைவாக உள்ளது. உங்கள் கண் நலத்திற்கு உரிய மருத்துவரை (Optometrist / Ophthalmologist) கட்டாயமாகச் சந்திப்பது அவசியம்.';
+    } else if (rest.includes('moderate range') || rest.includes('routine check-up')) {
+      localized =
+        'உங்கள் ஒட்டுமொத்த கண் நலக் குறியீடு சீரான நிலையில் உள்ளது. விதிவிலக்குக் கண் பரிசோதனைக்காக ஒரு கண் மருத்துவரைச் சந்திப்பது நல்லது.';
+    } else {
+      localized =
+        'உங்கள் ஒட்டுமொத்த கண் நலக் குறியீடு சிறப்பாக உள்ளது. தொடர்ந்து ஆரோக்கியமான பழக்கங்களைப் பேணுங்கள்.';
+    }
+    return `ஒட்டுமொத்த கண் நலக் குறியீடு: ${idx}/100. ${localized}`;
+  }
+
+  // Screen-time & symptom findings
+  const symptomPatterns: { re: RegExp; ta: string }[] = [
+    {
+      re: /Prolonged screen exposure \(over 3 hours daily\)[^.]*\./i,
+      ta: 'நீண்ட திரை நேரம் (3 மணிக்கு மேல்): கண் சோர்வு மற்றும் கண்புல்லின் தளர்வு அபாயம் அதிகம்.',
+    },
+    {
+      re: /Moderate screen time \(1–3 hours daily\)[^.]*\./i,
+      ta: 'மிதமான திரை நேரம் (1–3 மணி): இது பொதுவான வரம்புக்குள் இருந்தாலும் இடைவெளிகள் அவசியம்.',
+    },
+    {
+      re: /Low screen exposure \(under 1 hour daily\)[^.]*\./i,
+      ta: 'குறைந்த திரை நேரம் (1 மணிக்குக் குறைவு): கண் சோர்வு அபாயம் குறைவாக உள்ளது.',
+    },
+    {
+      re: /Late-night phone use in bed[^.]*\./i,
+      ta: 'படுக்கையில் இரவுப் பேசி பயன்பாடு: மங்கலான பார்வை, கண் வறட்சி மற்றும் உறக்கத்தின் தாக்கத்தை அதிகரிக்கிறது.',
+    },
+    {
+      re: /Eye irritation reported during the test[^.]*\./i,
+      ta: 'பரிசோதனை நேரத்தில் கண் எரிச்சல் அறிகுறிப்படுத்தப்பட்டது — கண்புல்ல் வலுவிழப்பு அல்லது அலர்ஜி காரணமாக இருக்கலாம்.',
+    },
+    {
+      re: /Watering eyes during the test[^.]*\./i,
+      ta: 'பரிசோதனை நேரத்தில் கண் நீர்த்தல் அறிகுறி — உலர்ந்த கண்ணைத் தூண்டும் திருப்பமுறு கண்ணீர் சுரப்பு.',
+    },
+    {
+      re: /Headache after screen use[^.]*\./i,
+      ta: 'திரை பயன்பாட்டிற்குப் பிறகு தலைவலி — கண் சோர்வு மற்றும் கழுத்து-தோள் தசைப் பாதிப்புடன் தொடர்புடையது.',
+    },
+    {
+      re: /Blurred vision after prolonged use[^.]*\./i,
+      ta: 'நீண்ட பயன்பாட்டிற்குப் பிறகு மங்கலான பார்வை — கண்புல்லின் தசைகள் தொடர்ந்து இறுக்கமாக இருப்பதால் கூடலாம்.',
+    },
+    {
+      re: /A notable difference in reading performance between the left and right eye was observed\./i,
+      ta: 'இடது மற்றும் வலது கண் வாசிப்பு மட்டங்களுக்கிடையே குறிப்பிடத்தக்க வேறுபாடு கண்டறியப்பட்டது.',
+    },
+  ];
+
+  for (const { re, ta } of symptomPatterns) {
+    if (re.test(text)) return ta;
   }
 
   // Check generic overview heuristic translation if it starts with "Based on your diagnostic inputs..."
@@ -145,7 +270,6 @@ function translateText(text: string, lang: 'en' | 'ta'): string {
   if (text.includes('Your digital visual acuity and color perception evaluation yielded')) {
     return 'உங்கள் கண்கள் பரிசோதனை முடிவுகள் ஆய்வு செய்யப்பட்டன. திரை பயன்பாட்டின் போது 20-20-20 விதியை தவறாமல் பின்பற்றி உங்கள் பார்வை நலனைப் பாதுகாத்துக் கொள்ளுங்கள்.';
   }
-
   return text;
 }
 
@@ -166,5 +290,13 @@ export function localizeReport(report: DiagnosticReport | null | undefined, lang
     recommendations: (report.recommendations || []).map((r) => translateText(r, lang)),
     lifestyleGuidance: translateText(report.lifestyleGuidance || '', lang),
     disclaimer: translateText(report.disclaimer || '', lang),
+    // Consultation notice carries its own server-side message per language, but
+    // translate it here too so a language switch on an older record still works.
+    consultation: report.consultation
+      ? {
+          level: report.consultation.level,
+          message: translateText(report.consultation.message || '', lang),
+        }
+      : undefined,
   };
 }

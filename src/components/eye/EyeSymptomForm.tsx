@@ -59,15 +59,15 @@ export const EyeSymptomForm: React.FC<EyeSymptomFormProps> = ({
     screenTime !== null && YES_NO_QUESTION_KEYS.every((key) => answers[key] !== null);
 
   return (
-    <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-5 sm:p-8 shadow-sm space-y-6">
+    <div className="h-full w-full flex flex-col bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-5 shadow-sm">
       {/* Header */}
-      <div className="border-b border-zinc-200 dark:border-zinc-800 pb-4">
-        <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50">{t.phase3Title}</h2>
-        <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-1">{t.eyePhase3Desc}</p>
+      <div className="page-fit-band border-b border-zinc-200 dark:border-zinc-800 pb-3">
+        <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-50">{t.phase3Title}</h2>
+        <p className="text-[11px] text-zinc-700 dark:text-zinc-300 mt-0.5">{t.eyePhase3Desc}</p>
       </div>
 
       {/* Test performance recap */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 bg-zinc-50 dark:bg-zinc-900/60 rounded-xl border border-zinc-200 dark:border-zinc-800 text-[11px] sm:text-xs">
+      <div className="page-fit-band grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 p-2.5 bg-zinc-50 dark:bg-zinc-900/60 rounded-xl border border-zinc-200 dark:border-zinc-800 text-[11px] sm:text-xs">
         <div>
           <span className="text-zinc-600 dark:text-zinc-400">{t.colorDiscriminationLabel}:</span>{' '}
           <span className="font-bold text-amber-600 dark:text-amber-400">{colorPassed}/10</span>
@@ -86,54 +86,56 @@ export const EyeSymptomForm: React.FC<EyeSymptomFormProps> = ({
         </div>
       </div>
 
-      {/* Question 1: Screen time dropdown */}
-      <div className="space-y-2">
-        <label
-          htmlFor="eye-screen-time"
-          className="flex items-center gap-2 text-sm font-semibold text-zinc-800 dark:text-zinc-200"
-        >
-          <MonitorSmartphone className="w-4 h-4 text-purple-500 shrink-0" />
-          <span>
-            1. {t.screenTimePrompt}
-            <span className="text-red-500 ml-1">*</span>
-          </span>
-        </label>
-        <select
-          id="eye-screen-time"
-          value={screenTime ?? ''}
-          onChange={(e) => onScreenTimeChange(e.target.value as ScreenTimeOption)}
-          className="w-full min-h-[46px] px-3 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-colors cursor-pointer"
-        >
-          <option value="" disabled>
-            {isTamil ? '— தேர்ந்தெடுக்கவும் —' : '— Select an option —'}
-          </option>
-          {screenTimeOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
+      {/* Question grid — 1 column on phones, 2 columns from lg so 6 questions fit on one screen.
+          overflow-y-auto is a safety valve for short/narrow windows. */}
+      <div className="flex-1 min-h-0 mt-3 grid grid-cols-1 lg:grid-cols-2 gap-x-5 gap-y-3 content-start overflow-y-auto">
+        {/* Question 1: Screen time dropdown */}
+        <div className="space-y-1.5">
+          <label
+            htmlFor="eye-screen-time"
+            className="flex items-center gap-2 text-xs sm:text-[13px] font-semibold text-zinc-800 dark:text-zinc-200"
+          >
+            <MonitorSmartphone className="w-4 h-4 text-purple-500 shrink-0" />
+            <span>
+              1. {t.screenTimePrompt}
+              <span className="text-red-500 ml-1">*</span>
+            </span>
+          </label>
+          <select
+            id="eye-screen-time"
+            value={screenTime ?? ''}
+            onChange={(e) => onScreenTimeChange(e.target.value as ScreenTimeOption)}
+            className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-colors cursor-pointer"
+          >
+            <option value="" disabled>
+              {isTamil ? '— தேர்ந்தெடுக்கவும் —' : '— Select an option —'}
             </option>
-          ))}
-        </select>
-      </div>
+            {screenTimeOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      {/* Questions 2-6: yes/no rows */}
-      <div className="space-y-4">
+        {/* Questions 2-6: yes/no rows */}
         {yesNoRows.map((row, idx) => {
           const value = answers[row.key];
           const Icon = row.icon;
           return (
-            <div key={row.key} className="space-y-2">
-              <label className="flex items-start gap-2 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+            <div key={row.key} className="space-y-1.5">
+              <label className="flex items-start gap-2 text-xs sm:text-[13px] font-semibold text-zinc-800 dark:text-zinc-200">
                 <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${row.tint}`} />
                 <span>
                   {idx + 2}. {row.prompt}
                   <span className="text-red-500 ml-1">*</span>
                 </span>
               </label>
-              <div className="grid grid-cols-2 gap-3 max-w-sm">
+              <div className="grid grid-cols-2 gap-2.5">
                 <button
                   type="button"
                   onClick={() => onAnswerChange(row.key, true)}
-                  className={`min-h-[44px] py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center gap-1.5 ${
+                  className={`min-h-[40px] py-2 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center gap-1.5 ${
                     value === true
                       ? `${row.activeTint} text-zinc-900 dark:text-zinc-100 font-bold`
                       : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
@@ -145,7 +147,7 @@ export const EyeSymptomForm: React.FC<EyeSymptomFormProps> = ({
                 <button
                   type="button"
                   onClick={() => onAnswerChange(row.key, false)}
-                  className={`min-h-[44px] py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center gap-1.5 ${
+                  className={`min-h-[40px] py-2 px-3 rounded-xl text-xs font-semibold border transition-all cursor-pointer touch-manipulation active:scale-[0.98] flex items-center justify-center gap-1.5 ${
                     value === false
                       ? 'bg-zinc-500/20 border-zinc-500 text-zinc-900 dark:text-zinc-100 font-bold'
                       : 'bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300'
@@ -161,7 +163,7 @@ export const EyeSymptomForm: React.FC<EyeSymptomFormProps> = ({
       </div>
 
       {/* Actions */}
-      <div className="pt-4 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800">
+      <div className="page-fit-band mt-3 pt-3 flex flex-col-reverse sm:flex-row items-center justify-between gap-2.5 border-t border-zinc-200 dark:border-zinc-800">
         <button
           type="button"
           onClick={onBack}
@@ -171,31 +173,32 @@ export const EyeSymptomForm: React.FC<EyeSymptomFormProps> = ({
           <span>{t.backToReadingTest}</span>
         </button>
 
-        <button
-          type="button"
-          onClick={onSubmit}
-          disabled={isSubmitting || !isComplete}
-          className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lime-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-zinc-950 font-bold text-sm shadow-md shadow-lime-500/20 active:scale-[0.98] transition-all cursor-pointer touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>{t.aiConsulting}</span>
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-4 h-4" />
-              <span>{t.submitEyeAnalysis}</span>
-            </>
+        <div className="flex flex-col sm:flex-row items-center gap-2.5">
+          {!isComplete && (
+            <span className="text-[11px] text-zinc-500 dark:text-zinc-500 order-last sm:order-first">
+              {isTamil ? 'அனைத்துக் கேள்விகளுக்கும் பதிலளிக்கவும்.' : 'Please answer all questions to continue.'}
+            </span>
           )}
-        </button>
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={isSubmitting || !isComplete}
+            className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-lime-600 to-amber-500 hover:from-lime-500 hover:to-amber-400 text-zinc-950 font-bold text-sm shadow-md shadow-lime-500/20 active:scale-[0.98] transition-all cursor-pointer touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>{t.aiConsulting}</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                <span>{t.submitEyeAnalysis}</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
-
-      {!isComplete && (
-        <p className="text-[11px] text-center text-zinc-500 dark:text-zinc-500">
-          {isTamil ? 'அனைத்துக் கேள்விகளுக்கும் பதிலளிக்கவும்.' : 'Please answer all questions to continue.'}
-        </p>
-      )}
     </div>
   );
 };

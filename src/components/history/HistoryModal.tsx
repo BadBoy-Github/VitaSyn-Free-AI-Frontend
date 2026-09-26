@@ -76,15 +76,15 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
     : null;
 
   return (
-    <div className="max-w-4xl mx-auto py-4 px-2 sm:px-4">
+    <div className="page-fit mx-auto w-full max-w-4xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+      <div className="page-fit-band flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-            <History className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500 shrink-0" />
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+            <History className="w-5 h-5 text-amber-500 shrink-0" />
             <span>{t.historyTitle}</span>
           </h1>
-          <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-0.5">
+          <p className="text-[11px] text-zinc-700 dark:text-zinc-300 mt-0.5">
             {t.historyDbSubtitle}
           </p>
         </div>
@@ -96,7 +96,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`min-h-[36px] px-3 py-1 rounded-lg font-semibold capitalize transition-all cursor-pointer touch-manipulation ${
+                className={`min-h-[34px] px-3 py-1 rounded-lg font-semibold capitalize transition-all cursor-pointer touch-manipulation ${
                   filter === f
                     ? 'bg-amber-400/20 text-amber-700 dark:text-amber-300 shadow-xs'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
@@ -109,7 +109,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
 
           <button
             onClick={fetchRecords}
-            className="min-h-[36px] min-w-[36px] flex items-center justify-center p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 cursor-pointer touch-manipulation"
+            className="min-h-[34px] min-w-[34px] flex items-center justify-center p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 cursor-pointer touch-manipulation"
             title="Refresh"
             aria-label="Refresh records"
           >
@@ -118,22 +118,26 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
         </div>
       </div>
 
-      {loading ? (
-        <div className="py-16 text-center text-zinc-500">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-amber-500" />
-          <p className="text-xs">
-            {language === 'ta' ? 'பதிவுகள் ஏற்றப்படுகின்றன...' : 'Loading assessment records...'}
-          </p>
-        </div>
-      ) : filteredRecords.length === 0 ? (
-        <div className="p-8 text-center bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl">
-          <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto mb-3">
-            <History className="w-6 h-6" />
+      {/* Records list — the only scrollable region on this page */}
+      <div className="page-fit-scroll">
+        {loading ? (
+          <div className="h-full flex flex-col items-center justify-center text-zinc-500">
+            <Loader2 className="w-8 h-8 animate-spin mb-2 text-amber-500" />
+            <p className="text-xs">
+              {language === 'ta' ? 'பதிவுகள் ஏற்றப்படுகின்றன...' : 'Loading assessment records...'}
+            </p>
           </div>
-          <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1">{t.noHistory}</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        ) : filteredRecords.length === 0 ? (
+          <div className="h-full flex items-center justify-center p-6 text-center bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl">
+            <div>
+              <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto mb-3">
+                <History className="w-6 h-6" />
+              </div>
+              <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">{t.noHistory}</p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 content-start">
           {filteredRecords.map((item) => {
             const itemReport = localizeReport(item.generatedReport, language);
             const displayTitle = itemReport?.title || item.scores.status;
@@ -204,8 +208,9 @@ export const HistoryModal: React.FC<HistoryModalProps> = () => {
               </div>
             );
           })}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
       {/* Detail Modal */}
       {selectedRecord && (

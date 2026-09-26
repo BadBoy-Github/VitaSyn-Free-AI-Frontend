@@ -64,8 +64,8 @@ const AppContent: React.FC = () => {
           onResetToWelcome={() => setCurrentTab('welcome')}
         />
 
-        {/* Dynamic Workspace */}
-        <main className="flex-1 overflow-y-auto p-3 sm:p-5 md:p-6">
+        {/* Dynamic Workspace — definite height so pages can fit the first screen */}
+        <main className="flex-1 min-h-0 overflow-hidden p-2 sm:p-3 md:p-4">
           {currentTab === 'welcome' && (
             <WelcomeView
               onStartHair={() => setCurrentTab('hair')}

@@ -206,23 +206,23 @@ export const HairAssessment: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-4 px-2 sm:px-4">
-      {/* Header Banner */}
-      <div className="mb-6 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-600 dark:text-amber-300 text-xs font-semibold mb-2">
-          <Sparkles className="w-3.5 h-3.5" />
+    <div className="page-fit mx-auto w-full max-w-4xl">
+      {/* Compact Header Banner */}
+      <div className="page-fit-band mb-2 sm:mb-3 text-center">
+        <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-600 dark:text-amber-300 text-[11px] font-semibold mb-1">
+          <Sparkles className="w-3 h-3" />
           <span>{t.hairAiBanner}</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        <h1 className="text-lg sm:text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
           {t.hairTitle}
         </h1>
-        <p className="text-sm text-zinc-700 dark:text-zinc-300 mt-1 max-w-xl mx-auto">
+        <p className="text-[11px] sm:text-xs text-zinc-700 dark:text-zinc-300 leading-snug">
           {t.hairSubtitle}
         </p>
       </div>
 
       {errorMsg && (
-        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
+        <div className="page-fit-band mb-2 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-xs flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           <span>{errorMsg}</span>
         </div>
@@ -230,14 +230,14 @@ export const HairAssessment: React.FC = () => {
 
       {/* STEP 1: UPLOAD & VERIFY */}
       {(step === 'upload' || step === 'verifying') && (
-        <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-8 shadow-sm">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500 font-bold text-sm">
+        <div className="h-full w-full flex flex-col bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-6 shadow-sm">
+          <div className="page-fit-band flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-500 font-bold text-sm shrink-0">
               1
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">{t.uploadTitle}</h2>
-              <p className="text-xs text-zinc-700 dark:text-zinc-300">{t.uploadDesc}</p>
+              <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100">{t.uploadTitle}</h2>
+              <p className="text-[11px] text-zinc-700 dark:text-zinc-300">{t.uploadDesc}</p>
             </div>
           </div>
 
@@ -252,19 +252,19 @@ export const HairAssessment: React.FC = () => {
           {/* Upload Dropzone */}
           <div
             onClick={triggerFileInput}
-            className={`border-2 border-dashed rounded-xl p-4 sm:p-6 text-center cursor-pointer transition-all duration-200 touch-manipulation ${
+            className={`flex-1 min-h-0 flex items-center justify-center border-2 border-dashed rounded-xl p-3 text-center cursor-pointer transition-all duration-200 touch-manipulation ${
               imagePreview
                 ? 'border-amber-500/60 bg-amber-500/5'
                 : 'border-zinc-300 dark:border-zinc-700 hover:border-amber-500/50 hover:bg-zinc-50 dark:hover:bg-zinc-900/50'
             }`}
           >
             {imagePreview ? (
-              <div className="flex flex-col items-center gap-3">
+              <div className="flex flex-col items-center gap-2">
                 <div className="relative max-w-full">
                   <img
                     src={imagePreview}
                     alt="Scalp Preview"
-                    className="max-h-48 sm:max-h-56 max-w-full rounded-lg object-contain border border-zinc-200 dark:border-zinc-700 shadow-sm"
+                    className="max-h-40 sm:max-h-64 max-w-full rounded-lg object-contain border border-zinc-200 dark:border-zinc-700 shadow-sm"
                   />
                   <span className="absolute bottom-2 right-2 text-[10px] bg-black/70 text-white px-2 py-0.5 rounded-md backdrop-blur-xs">
                     {t.tapToChangePhoto}
@@ -275,18 +275,18 @@ export const HairAssessment: React.FC = () => {
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-4 sm:py-6">
-                <div className="p-3 rounded-full bg-amber-500/10 text-amber-500 mb-2 sm:mb-3">
-                  <UploadCloud className="w-7 h-7 sm:w-8 sm:h-8" />
+              <div className="flex flex-col items-center justify-center py-3">
+                <div className="p-3 rounded-full bg-amber-500/10 text-amber-500 mb-2">
+                  <UploadCloud className="w-7 h-7" />
                 </div>
                 <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">{t.choosePhoto}</p>
-                <p className="text-[11px] sm:text-xs text-zinc-600 dark:text-zinc-400 mt-1">PNG, JPG, WEBP up to 15MB</p>
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-1">PNG, JPG, WEBP up to 15MB</p>
               </div>
             )}
           </div>
 
           {/* Optional User Description */}
-          <div className="mt-4 sm:mt-5">
+          <div className="page-fit-band mt-3">
             <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
               {t.photoDescriptionLabel}
             </label>
@@ -295,16 +295,16 @@ export const HairAssessment: React.FC = () => {
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t.photoDescriptionPlaceholder}
               rows={2}
-              className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:border-amber-500 transition-colors resize-none"
+              className="w-full text-sm px-3.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/70 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:border-amber-500 transition-colors resize-none"
             />
           </div>
 
           {/* Action Button */}
-          <div className="mt-5 sm:mt-6 flex justify-end">
+          <div className="page-fit-band mt-3 flex justify-end">
             <button
               onClick={verifyImage}
               disabled={step === 'verifying' || !imagePreview}
-              className={`w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-200 shadow-md touch-manipulation ${
+              className={`w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 shadow-md touch-manipulation ${
                 !imagePreview || step === 'verifying'
                   ? 'bg-zinc-300 dark:bg-zinc-800 text-zinc-500 cursor-not-allowed'
                   : 'bg-gradient-to-r from-amber-500 to-lime-600 hover:from-amber-400 hover:to-lime-500 text-zinc-950 font-bold shadow-amber-500/20 active:scale-[0.98] cursor-pointer'
@@ -328,20 +328,20 @@ export const HairAssessment: React.FC = () => {
 
       {/* REJECTED STATE: NOT HAIR */}
       {step === 'rejected' && (
-        <div className="bg-white dark:bg-[#121812] border border-red-500/30 dark:border-red-500/20 rounded-2xl p-6 sm:p-8 text-center shadow-md">
-          <div className="w-14 h-14 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4">
+        <div className="h-full w-full flex flex-col items-center justify-center bg-white dark:bg-[#121812] border border-red-500/30 dark:border-red-500/20 rounded-2xl p-6 text-center shadow-md">
+          <div className="w-14 h-14 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mb-3">
             <ShieldAlert className="w-7 h-7" />
           </div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">
+          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-1.5">
             {t.hairNotDetectedTitle}
           </h2>
-          <p className="text-sm text-zinc-700 dark:text-zinc-300 max-w-md mx-auto mb-6">
+          <p className="text-xs text-zinc-700 dark:text-zinc-300 max-w-md mx-auto mb-4">
             {verificationData?.message || t.hairNotDetectedDesc}
           </p>
 
           {imagePreview && (
-            <div className="max-w-xs mx-auto mb-6 p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-              <img src={imagePreview} alt="Uploaded" className="max-h-40 rounded-lg mx-auto object-cover opacity-75" />
+            <div className="max-w-xs w-full mb-4 p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+              <img src={imagePreview} alt="Uploaded" className="max-h-32 rounded-lg mx-auto object-cover opacity-75" />
             </div>
           )}
 
@@ -361,9 +361,9 @@ export const HairAssessment: React.FC = () => {
 
       {/* STEP 2: HAIR QUESTIONS */}
       {(step === 'questions' || step === 'analyzing') && (
-        <div className="bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="h-full w-full flex flex-col bg-white dark:bg-[#121812] border border-zinc-200 dark:border-[#273526] rounded-2xl p-4 sm:p-5 shadow-sm">
           {/* Verified Badge Header */}
-          <div className="p-3 rounded-xl bg-lime-500/10 border border-lime-500/30 flex items-center justify-between">
+          <div className="page-fit-band p-2.5 rounded-xl bg-lime-500/10 border border-lime-500/30 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <CheckCircle2 className="w-5 h-5 text-lime-500" />
               <div>
@@ -384,17 +384,21 @@ export const HairAssessment: React.FC = () => {
             )}
           </div>
 
-          <div className="border-b border-zinc-200 dark:border-zinc-800 pb-2">
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+          <div className="page-fit-band border-b border-zinc-200 dark:border-zinc-800 pb-2 mt-2.5">
+            <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
               {t.hairStep2Title}
             </h2>
-            <p className="text-xs text-zinc-700 dark:text-zinc-300">
+            <p className="text-[11px] text-zinc-700 dark:text-zinc-300">
               {t.hairStep2Desc}
             </p>
           </div>
 
+          {/* Question grid — 1 column on phones, 2 columns from lg.
+              overflow-y-auto is a safety valve for short/narrow windows. */}
+          <div className="flex-1 min-h-0 mt-3 grid grid-cols-1 lg:grid-cols-2 gap-x-5 gap-y-3 content-start overflow-y-auto">
+
           {/* Question 1: Dryness */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="block text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
               {t.qDrynessTitle}
             </label>
@@ -421,7 +425,7 @@ export const HairAssessment: React.FC = () => {
           </div>
 
           {/* Question 2: Growth Rate */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="block text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
               {t.qGrowthTitle}
             </label>
@@ -448,7 +452,7 @@ export const HairAssessment: React.FC = () => {
           </div>
 
           {/* Question 3: Itching */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="block text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
               {t.qItchingTitle}
             </label>
@@ -479,7 +483,7 @@ export const HairAssessment: React.FC = () => {
           </div>
 
           {/* Question 4: Dandruff */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="block text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
               {t.qDandruffTitle}
             </label>
@@ -510,7 +514,7 @@ export const HairAssessment: React.FC = () => {
           </div>
 
           {/* Question 5: Head Lice */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="block text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
               {t.qLiceTitle}
             </label>
@@ -539,9 +543,10 @@ export const HairAssessment: React.FC = () => {
               </button>
             </div>
           </div>
+          </div>
 
           {/* Submit Action */}
-          <div className="pt-4 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800">
+          <div className="page-fit-band mt-3 pt-3 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800">
             <button
               onClick={() => setStep('upload')}
               className="w-full sm:w-auto min-h-[40px] text-xs text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center justify-center gap-1 cursor-pointer touch-manipulation"
@@ -571,10 +576,10 @@ export const HairAssessment: React.FC = () => {
         </div>
       )}
 
-      {/* STEP 3: AI REPORT CARD */}
+      {/* STEP 3: AI REPORT CARD — a long document, so this region scrolls */}
       {step === 'report' && displayReport && (
-        <div className="space-y-6">
-          <div className="bg-white dark:bg-[#121812] border border-amber-400/40 dark:border-lime-500/30 rounded-2xl p-4 sm:p-8 shadow-lg relative overflow-hidden">
+        <div className="page-fit-scroll w-full">
+          <div className="bg-white dark:bg-[#121812] border border-amber-400/40 dark:border-lime-500/30 rounded-2xl p-4 sm:p-6 shadow-lg relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-amber-400/10 to-lime-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
 
             {/* Top Bar of Report */}
